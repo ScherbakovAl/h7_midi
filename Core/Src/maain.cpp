@@ -27,7 +27,7 @@ void gpio_bsrr::andd() {
 	GPIOA->BSRR |= andd_bsrr;// |=
 }
 void gpio_bsrr::_andd() {
-	GPIOA->BSRR = _andd_bsrr;// = ?(последнее изменение было сдесь (по эксперименту с " |= "))
+	GPIOA->BSRR = _andd_bsrr;// = (последнее изменение было сдесь (по эксперименту с " |= и ="))
 }
 
 void gpio_bsrr::distort_A0() {
