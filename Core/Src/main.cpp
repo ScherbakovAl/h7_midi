@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "maain.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,12 +52,35 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+extern "C" void Error_Handler();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+const unsigned int extpr0 = 1;
+const unsigned int extpr1 = 2;
+const unsigned int extpr2 = 4;
+const unsigned int extpr3 = 8;
+const unsigned int extpr4 = 16;
+const unsigned int extpr5 = 32;
+const unsigned int extpr6 = 64;
+const unsigned int extpr7 = 128;
+const unsigned int extpr8 = 256;
+const unsigned int extpr9 = 512;
+const unsigned int extpr10 = 1024;
 
+const unsigned int interrupt0 = 0;
+const unsigned int interrupt1 = 1;
+const unsigned int interrupt2 = 2;
+const unsigned int interrupt3 = 3;
+const unsigned int interrupt4 = 4;
+const unsigned int interrupt5 = 5;
+const unsigned int interrupt6 = 6;
+const unsigned int interrupt7 = 7;
+const unsigned int interrupt8 = 8;
+const unsigned int interrupt9 = 9;
+const unsigned int interrupt10 = 10;
+Keys keys;
 /* USER CODE END 0 */
 
 /**
@@ -95,8 +118,32 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM2_Init();
-  MX_USB_DEVICE_Init();
+//  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(10);
+//  SysTick->CTRL = 0;// HAL_Delay тогда не работает и usb глючит
+  HAL_TIM_Base_Start(&htim2);
+  keys.init_bit_mask();
+  keys.wheel();
+  gpio_bsrr bsrrr;//for tests
+
+  //  SysTick->CTRL = 0;//!!!!!!!!!!!!!!!!!!!!!!!!
+  //  SCB_EnableICache();//!!!!!!!!!!!!!!!!!!!!!!!????????????????????????
+
+    //https://metebalci.com/blog/stm32h7-gpio-toggling/
+    // ssss ppppp eeee  ddddd !!!!!
+    /*
+     *
+     * register volatile uint32_t* bsrr = (uint32_t*) (GPIOB_BASE + 24);
+  register const uint32_t set = (uint32_t) GPIO_PIN_11;
+  register const uint32_t reset = (uint32_t) GPIO_PIN_11 << 16U;
+
+  while (1)
+  {
+    *bsrr = set;
+    *bsrr = reset;
+  }
+     */
 
   /* USER CODE END 2 */
 
@@ -104,6 +151,24 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  bsrrr.distort_A0();
+	  bsrrr.distort_A1();
+//	  GPIOA->BSRR |= 0x1;
+//	  HAL_Delay(2000);
+//	  GPIOA->BSRR |= 0x10000;
+//	  HAL_Delay(1000);
+//	  GPIOA->BSRR |= 0x2;
+//	  HAL_Delay(2000);
+//	  GPIOA->BSRR |= 0x20000;
+//	  HAL_Delay(1000);
+//	  GPIOA->BSRR |= 0x4;
+//	  HAL_Delay(2000);
+//	  GPIOA->BSRR |= 0x40000;
+//	  HAL_Delay(1000);
+
+	  //скорость..
+	  //RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV64;
+	  //или 1 или 2 или 4.. 8 ..16
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -125,8 +190,8 @@ void SystemClock_Config(void)
   HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
 
   /** Configure the main internal regulator output voltage
-  */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  */__HAL_RCC_SYSCFG_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
@@ -139,7 +204,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 2;
-  RCC_OscInitStruct.PLL.PLLN = 20;
+  RCC_OscInitStruct.PLL.PLLN = 96;//20 == 100mhz, 96 == 480mhz
   RCC_OscInitStruct.PLL.PLLP = 2;
   RCC_OscInitStruct.PLL.PLLQ = 2;
   RCC_OscInitStruct.PLL.PLLR = 2;
@@ -157,14 +222,14 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
                               |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
-  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
+  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;//<<<<<<<<<<<<< 1
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;// 1 or 2 (после проца делитель)
+  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;// 1 or 2
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;// 1 or 2
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;// 1 or 2
+  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;// 1 or 2
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -189,7 +254,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 959;
+  htim2.Init.Prescaler = 999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -238,16 +303,16 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : SH_LD_Pin CLK_Pin AND_Pin */
   GPIO_InitStruct.Pin = SH_LD_Pin|CLK_Pin|AND_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;// с резисторами: GPIO_MODE_OUTPUT_OD, без - GPIO_MODE_OUTPUT_PP
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;// с резисторами: GPIO_NOPULL, без - GPIO_PULLDOWN
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : test_8_Pin test_10_Pin test_12_Pin test_14_Pin */
   GPIO_InitStruct.Pin = test_8_Pin|test_10_Pin|test_12_Pin|test_14_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD8 PD9 PD10 PD0
@@ -285,6 +350,77 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+//============================================================================================================
+// extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C"
+extern "C" {
+void EXTI0_IRQHandler(void) {
+	EXTI->PR1 = extpr0;
+//	if (selector) {
+//		Interrupt(0, muxx);
+//	} else {
+	keys.interrupt(interrupt0);
+//	}
+}
+void EXTI1_IRQHandler(void) {
+	EXTI->PR1 = extpr1;
+//	if (selector) {
+//		Interrupt(1, muxx);
+//	} else {
+	keys.interrupt(interrupt1);
+//	}
+}
+void EXTI2_IRQHandler(void) {
+	EXTI->PR1 = extpr2;
+//	Interrupt(2, muxx);
+	keys.interrupt(interrupt2);
+}
+void EXTI3_IRQHandler(void) {
+	EXTI->PR1 = extpr3;
+//	Interrupt(3, muxx);
+	keys.interrupt(interrupt3);
+}
+void EXTI4_IRQHandler(void) {
+	EXTI->PR1 = extpr4;
+//	Interrupt(4, muxx);
+	keys.interrupt(interrupt4);
+}
+void EXTI9_5_IRQHandler(void) {
+	if ((EXTI->PR1 & EXTI_PR1_PR5) == EXTI_PR1_PR5) {
+		EXTI->PR1 = extpr5;
+//		Interrupt(5, muxx);
+		keys.interrupt(interrupt5);
+	}
+	if ((EXTI->PR1 & EXTI_PR1_PR6) == EXTI_PR1_PR6) {
+		EXTI->PR1 = extpr6;
+//		Interrupt(6, muxx);
+		keys.interrupt(interrupt6);
+	}
+	if ((EXTI->PR1 & EXTI_PR1_PR7) == EXTI_PR1_PR7) {
+		EXTI->PR1 = extpr7;
+//		Interrupt(7, muxx);
+		keys.interrupt(interrupt7);
+	}
+	if ((EXTI->PR1 & EXTI_PR1_PR8) == EXTI_PR1_PR8) {
+		EXTI->PR1 = extpr8;
+//		Interrupt(8, muxx);
+		keys.interrupt(interrupt8);
+	}
+	if ((EXTI->PR1 & EXTI_PR1_PR9) == EXTI_PR1_PR9) {
+		EXTI->PR1 = extpr9;
+//		Interrupt(9, muxx);
+		keys.interrupt(interrupt9);
+	}
+}
+void EXTI15_10_IRQHandler(void) {
+	if ((EXTI->PR1 & EXTI_PR1_PR10) == EXTI_PR1_PR10) {
+		EXTI->PR1 = extpr10;
+//		Interrupt(10, muxx);
+		keys.interrupt(interrupt10);
+	}
+}
+}									//extern "C"
+// extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C" extern "C"
+//============================================================================================================
 
 /* USER CODE END 4 */
 
