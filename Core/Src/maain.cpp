@@ -115,20 +115,20 @@ void Keys::init_bit_mask() {
 void Keys::wheel() {
 	while (1) {
 		mask_load_to_imr(0);
-		gpio.sh_ld();
-		gpio._andd();
-		gpio._sh_ld();
-		gpio.andd();
+		gpio.sh_ld();//=
+		gpio._andd();//=
+		gpio._sh_ld();//|=
+		gpio.andd();//|=
 
 		for (int i = one; i < size_mux; ++i) {
 			mask_load_to_imr(i);
 
 			//			gpio.distort_E8();//for tests
 
-			gpio._clk();
-			gpio._andd();
-			gpio.clk();
-			gpio.andd();
+			gpio._clk();//=
+			gpio._andd();//=
+			gpio.clk();//|=
+			gpio.andd();//|=
 		}
 		check();
 		counter.twenty_times();
