@@ -12,60 +12,32 @@
 using namespace std;
 
 void gpio_bsrr::sh_ld() {
-	GPIOA->BSRR = sh_ld_bsrr;// =
+	GPIOA->BSRR |= sh_ld_bsrr; // =
 }
 void gpio_bsrr::_sh_ld() {
-	GPIOA->BSRR |= _sh_ld_bsrr;// |=
+	GPIOA->BSRR |= _sh_ld_bsrr; // |=
 }
 void gpio_bsrr::clk() {
-	GPIOA->BSRR |= clk_bsrr;// |=
+	GPIOA->BSRR |= clk_bsrr; // |=
 }
 void gpio_bsrr::_clk() {
-	GPIOA->BSRR = _clk_bsrr;// =
+	GPIOA->BSRR |= _clk_bsrr; // =
 }
 void gpio_bsrr::andd() {
-	GPIOA->BSRR |= andd_bsrr;// |=
+	GPIOA->BSRR |= andd_bsrr; // |=
 }
 void gpio_bsrr::_andd() {
-	GPIOA->BSRR = _andd_bsrr;// = (последнее изменение было сдесь (по эксперименту с " |= и ="))
+	GPIOA->BSRR |= _andd_bsrr; // = (последнее изменение было сдесь (по эксперименту с " |= и ="))
 }
-
-void gpio_bsrr::distort_A0() {
-	GPIOA->BSRR |= sh_ld_bsrr;
-	GPIOA->BSRR |= _sh_ld_bsrr;
+void gpio_bsrr::andd_off() {
+	GPIOA->BSRR |= and_off; // |=
 }
-
-void gpio_bsrr::distort_A1() {
-	GPIOA->BSRR |= clk_bsrr;
-	GPIOA->BSRR |= _clk_bsrr;
+void gpio_bsrr::_andd_off() {
+	GPIOA->BSRR |= _and_off; // = (последнее изменение было сдесь (по эксперименту с " |= и ="))
 }
-
-void gpio_bsrr::distort_A2() {
-	GPIOA->BSRR |= andd_bsrr;
-	GPIOA->BSRR |= _andd_bsrr;
-}
-
-void gpio_bsrr::distort_E8() {
-	GPIOE->BSRR |= test_E8_bsrr_on;
-	GPIOE->BSRR |= test_E8_bsrr_off;
-}
-void gpio_bsrr::distort_E10() {
-	GPIOE->BSRR |= test_E10_bsrr_on;
-	GPIOE->BSRR |= test_E10_bsrr_off;
-}
-void gpio_bsrr::distort_E12() {
-	GPIOE->BSRR |= test_E12_bsrr_on;
-	GPIOE->BSRR |= test_E12_bsrr_off;
-}
-void gpio_bsrr::distort_E14() {
-	GPIOE->BSRR |= test_E14_bsrr_on;
-	GPIOE->BSRR |= test_E14_bsrr_off;
-}
-
 Numbers::Numbers(const unsigned int &channel, const unsigned int &mux_) :
 		number((channel << 4) + mux_), mu(mux_), cha(channel) {
 }
-
 void Counter::reset() {
 	times = 0;
 	event = 0;
@@ -87,7 +59,7 @@ bool Counter::check() {
 
 void Keys::number_note_setter() {
 	uint8_t zz = 69;
-	for (int i = 0; i < keyss;) {
+	for (unsigned int i = 0; i < keyss;) {
 		notes[i] = zz;
 		notes[i + 1] = zz;
 		++zz;
@@ -97,45 +69,51 @@ void Keys::number_note_setter() {
 
 void Keys::init_bit_mask() {
 	number_note_setter();
-	for (int sat = nule; sat < size_mux; ++sat) {
-		//		bits[sat].set(0);//..
-		//		bits[sat].set(1);//..
-		//		bits[sat].set(2);//..
-		//		bits[sat].set(3);//.. 1-3  не припаян?
+	for (unsigned int sat = nule; sat < size_mux; ++sat) {
+		bits[sat].set(0); //..
+		bits[sat].set(1); //..
+		bits[sat].set(2); //..
+		bits[sat].set(3); //..
 		bits[sat].set(4);		//.. 1-2
-		bits[sat].set(5);		//.. 1-1
-		bits[sat].set(6);		//.. 2-1
-		bits[sat].set(7);		//.. 2-2
-		bits[sat].set(8);		//.. 2-3
+//		bits[sat].set(5);		//.. 1-1
+//		bits[sat].set(6);		//.. 2-1
+		//		bits[sat].set(7);		//.. 2-2
+		//		bits[sat].set(8);		//.. 2-3
 		//		bits[sat].set(9);//..
 		//		bits[sat].set(10);//..
 	}
 }
 
 void Keys::wheel() {
+	gpio.andd_off();//чтобы не грелись микрухи управляющие "off"
+	//for test:
+//	Numbers numb_for_test(1, 2);
+//	quee.push(numb_for_test);
+//	quee.pop();
+	//for test ^^^^^^^
+
 	while (1) {
 		mask_load_to_imr(0);
-		gpio.sh_ld();//=
-		gpio._andd();//=
-		gpio._sh_ld();//|=
-		gpio.andd();//|=
+		gpio.sh_ld();		//=
+		gpio._andd();		//=
+		gpio._sh_ld();		//|=
+		gpio.andd();		//|=
 
-		for (int i = one; i < size_mux; ++i) {
+//		gpio.andd_off();
+//		gpio._andd_off();
+
+		for (unsigned int i = one; i < size_mux; ++i) {
 			mask_load_to_imr(i);
-
-			//			gpio.distort_E8();//for tests
-
-			gpio._clk();//=
-			gpio._andd();//=
-			gpio.clk();//|=
-			gpio.andd();//|=
+			gpio._clk();		//=
+			gpio._andd();		//=
+			gpio.clk();			//|=
+			gpio.andd();		//|=
 		}
 		check();
 		counter.twenty_times();
 		if (counter.check()) {
 			//			USBD_MIDI_SendPacket();
 			counter.reset();
-			//			gpio.distort_E8();
 		}
 	}
 }

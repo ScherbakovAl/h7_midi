@@ -125,7 +125,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   keys.init_bit_mask();
   keys.wheel();
-  gpio_bsrr bsrrr;//for tests
+//  gpio_bsrr bsrrr;//for tests
 
   //  SysTick->CTRL = 0;//!!!!!!!!!!!!!!!!!!!!!!!!
   //  SCB_EnableICache();//!!!!!!!!!!!!!!!!!!!!!!!????????????????????????
@@ -151,21 +151,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  bsrrr.distort_A0();
-	  bsrrr.distort_A1();
-//	  GPIOA->BSRR |= 0x1;
-//	  HAL_Delay(2000);
-//	  GPIOA->BSRR |= 0x10000;
-//	  HAL_Delay(1000);
-//	  GPIOA->BSRR |= 0x2;
-//	  HAL_Delay(2000);
-//	  GPIOA->BSRR |= 0x20000;
-//	  HAL_Delay(1000);
-//	  GPIOA->BSRR |= 0x4;
-//	  HAL_Delay(2000);
-//	  GPIOA->BSRR |= 0x40000;
-//	  HAL_Delay(1000);
-
 	  //скорость..
 	  //RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV64;
 	  //или 1 или 2 или 4.. 8 ..16
@@ -296,24 +281,24 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SH_LD_Pin|CLK_Pin|AND_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, SH_LD_Pin|CLK_Pin|AND_Pin|and_off_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, test_8_Pin|test_10_Pin|test_12_Pin|test_14_Pin, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOE, test_8_Pin|test_10_Pin|test_12_Pin|test_14_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : SH_LD_Pin CLK_Pin AND_Pin */
-  GPIO_InitStruct.Pin = SH_LD_Pin|CLK_Pin|AND_Pin;
+  GPIO_InitStruct.Pin = SH_LD_Pin|CLK_Pin|AND_Pin|and_off_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;// с резисторами: GPIO_MODE_OUTPUT_OD, без - GPIO_MODE_OUTPUT_PP
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;// с резисторами: GPIO_NOPULL, без - GPIO_PULLDOWN
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : test_8_Pin test_10_Pin test_12_Pin test_14_Pin */
-  GPIO_InitStruct.Pin = test_8_Pin|test_10_Pin|test_12_Pin|test_14_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+//  GPIO_InitStruct.Pin = test_8_Pin|test_10_Pin|test_12_Pin|test_14_Pin;
+//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+//  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD8 PD9 PD10 PD0
                            PD1 PD2 PD3 PD4
@@ -388,34 +373,34 @@ void EXTI9_5_IRQHandler(void) {
 	if ((EXTI->PR1 & EXTI_PR1_PR5) == EXTI_PR1_PR5) {
 		EXTI->PR1 = extpr5;
 //		Interrupt(5, muxx);
-		keys.interrupt(interrupt5);
+//		keys.interrupt(interrupt5);
 	}
 	if ((EXTI->PR1 & EXTI_PR1_PR6) == EXTI_PR1_PR6) {
 		EXTI->PR1 = extpr6;
 //		Interrupt(6, muxx);
-		keys.interrupt(interrupt6);
+//		keys.interrupt(interrupt6);
 	}
 	if ((EXTI->PR1 & EXTI_PR1_PR7) == EXTI_PR1_PR7) {
 		EXTI->PR1 = extpr7;
 //		Interrupt(7, muxx);
-		keys.interrupt(interrupt7);
+//		keys.interrupt(interrupt7);
 	}
 	if ((EXTI->PR1 & EXTI_PR1_PR8) == EXTI_PR1_PR8) {
 		EXTI->PR1 = extpr8;
 //		Interrupt(8, muxx);
-		keys.interrupt(interrupt8);
+//		keys.interrupt(interrupt8);
 	}
 	if ((EXTI->PR1 & EXTI_PR1_PR9) == EXTI_PR1_PR9) {
 		EXTI->PR1 = extpr9;
 //		Interrupt(9, muxx);
-		keys.interrupt(interrupt9);
+//		keys.interrupt(interrupt9);
 	}
 }
 void EXTI15_10_IRQHandler(void) {
 	if ((EXTI->PR1 & EXTI_PR1_PR10) == EXTI_PR1_PR10) {
 		EXTI->PR1 = extpr10;
 //		Interrupt(10, muxx);
-		keys.interrupt(interrupt10);
+//		keys.interrupt(interrupt10);
 	}
 }
 }									//extern "C"

@@ -63,14 +63,8 @@ void Error_Handler(void);
 #define CLK_GPIO_Port GPIOA
 #define AND_Pin GPIO_PIN_2
 #define AND_GPIO_Port GPIOA
-#define test_8_Pin GPIO_PIN_8
-#define test_8_GPIO_Port GPIOE
-#define test_10_Pin GPIO_PIN_10
-#define test_10_GPIO_Port GPIOE
-#define test_12_Pin GPIO_PIN_12
-#define test_12_GPIO_Port GPIOE
-#define test_14_Pin GPIO_PIN_14
-#define test_14_GPIO_Port GPIOE
+#define and_off_Pin GPIO_PIN_3
+#define and_off_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
