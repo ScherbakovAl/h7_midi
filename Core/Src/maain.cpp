@@ -8,7 +8,7 @@
 #include "main.h"
 #include "maain.h"
 //#include "usbd_midi.h"
-//test github
+
 using namespace std;
 
 void gpio_bsrr::sh_ld() {
@@ -70,14 +70,14 @@ void Keys::number_note_setter() {
 void Keys::init_bit_mask() {
 	number_note_setter();
 	for (unsigned int sat = nule; sat < size_mux; ++sat) {
-		bits[sat].set(0); //..
-		bits[sat].set(1); //..
-		bits[sat].set(2); //..
-		bits[sat].set(3); //..
+//		bits[sat].set(0); //..
+//		bits[sat].set(1); //..
+//		bits[sat].set(2); //..
+//		bits[sat].set(3); //..
 		bits[sat].set(4);		//.. 1-2
-//		bits[sat].set(5);		//.. 1-1
-//		bits[sat].set(6);		//.. 2-1
-		//		bits[sat].set(7);		//.. 2-2
+		bits[sat].set(5);		//.. 1-1
+		bits[sat].set(6);		//.. 2-1
+		bits[sat].set(7);		//.. 2-2
 		//		bits[sat].set(8);		//.. 2-3
 		//		bits[sat].set(9);//..
 		//		bits[sat].set(10);//..
@@ -85,12 +85,7 @@ void Keys::init_bit_mask() {
 }
 
 void Keys::wheel() {
-	gpio.andd_off();//чтобы не грелись микрухи управляющие "off"
-	//for test:
-//	Numbers numb_for_test(1, 2);
-//	quee.push(numb_for_test);
-//	quee.pop();
-	//for test ^^^^^^^
+	gpio.andd_off();		//чтобы не грелись микрухи управляющие "off"
 
 	while (1) {
 		mask_load_to_imr(0);
@@ -135,17 +130,11 @@ void Keys::check() {
 }
 
 void Keys::interrupt(const unsigned int &channel) {
-
-	//	gpio.distort_E10();//for tests
-
 	unsigned int muu = mux;
 	bits[muu].reset(channel);
 	Numbers nnumb(channel, muu);
 	quee.push(nnumb); //Добавляет элемент в конец queue
 	timer_save(nnumb, muu);
-
-	//	gpio.distort_E10();//for tests
-	//	gpio.distort_E12();//for tests
 }
 
 void Keys::timer_save(const Numbers &nu, const unsigned int &m) {
