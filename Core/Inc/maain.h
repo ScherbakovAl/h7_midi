@@ -39,12 +39,12 @@ public:
 //	void distort_E12();	// test_E12
 //	void distort_E14();	// test_E14
 private:
-	const unsigned int sh_ld_bsrr = 0x1;
-	const unsigned int _sh_ld_bsrr = 0x10000;
+	const unsigned int sh_ld_bsrr = 0x0010; // оторвался роводок, переставил на А4 pin
+	const unsigned int _sh_ld_bsrr = 0x00100000; // оторвался роводок, переставил на А4 pin
 	const unsigned int clk_bsrr = 0x2;
 	const unsigned int _clk_bsrr = 0x20000;
-	const unsigned int andd_bsrr = 0x4;
-	const unsigned int _andd_bsrr = 0x40000;
+	const unsigned int andd_bsrr = 0x0040; // оторвался роводок, переставил на А6 pin
+	const unsigned int _andd_bsrr = 0x00400000; // оторвался роводок, переставил на А6 pin
 	const unsigned int and_off = 0x8;
 	const unsigned int _and_off = 0x80000;
 //	const unsigned int test_E8_bsrr_on = 0x100;

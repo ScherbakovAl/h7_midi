@@ -57,14 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SH_LD_Pin GPIO_PIN_0
+#define SH_LD_Pin GPIO_PIN_4  // <<< отвалился проводок и заменил на А4 pin.
 #define SH_LD_GPIO_Port GPIOA
 #define CLK_Pin GPIO_PIN_1
 #define CLK_GPIO_Port GPIOA
-#define AND_Pin GPIO_PIN_2
+#define AND_Pin GPIO_PIN_6  // // <<< отвалился проводок и заменил на А6 pin.
 #define AND_GPIO_Port GPIOA
-#define and_off_Pin GPIO_PIN_3
-#define and_off_GPIO_Port GPIOA
+#define AND_OFF_Pin GPIO_PIN_3
+#define AND_OFF_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
