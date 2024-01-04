@@ -4,13 +4,10 @@
  *  Created on: Sep 23, 2022
  *      Author: scherbakov
  */
-// git test in "изменение_из_midi_controller............"
+
 #include <midi_keyboard.h>
 #include "usb_device.h"
-//#include "main.h"
 //#include "usbd_midi.h"
-
-//using namespace std;
 
 //  ################################################## for ON
 void gpioBsrr::ShLdHi_On() {
