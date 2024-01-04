@@ -4,7 +4,7 @@
  *  Created on: Sep 23, 2022
  *      Author: scherbakov
  */
-// git test in "изменение_из_midi_controller............"
+// git test in "изменение_из_midi_controller v.2"
 #include <midi_keyboard.h>
 #include "usb_device.h"
 //#include "main.h"
