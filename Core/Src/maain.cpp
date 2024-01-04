@@ -4,7 +4,7 @@
  *  Created on: Sep 23, 2022
  *      Author: scherbakov
  */
-
+// git test in "изменение из MASTER"
 #include "main.h"
 #include "maain.h"
 //#include "usbd_midi.h"
