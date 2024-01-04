@@ -7,10 +7,9 @@
 
 #pragma once
 
+#include "usb_device.h"
 #include <queue>
 #include <bitset>
-//#include "main.h"
-//#include "usbd_midi_if.h"
 
 enum class NowOnOrOff {
 	midiOn, midiOff
@@ -32,7 +31,7 @@ public:
 	void AndOffHi_Off();		// +A3	(AND_OFF)
 	void AndOffLo_Off();		// -A3	(AND_OFF)
 
-	void Test1();
+	void Test1();		// в данном проекте не включено gpio должным образом!!!
 	void Test2();
 
 private:
@@ -52,7 +51,7 @@ private:
 
 class numberS {
 public:
-	void set(const unsigned int &channel, const unsigned int &mux_);
+	void set(const unsigned int &channel, volatile unsigned int &mux_);
 	unsigned int number = 0;
 	unsigned int mu = 0;
 	unsigned int cha = 0;
@@ -79,7 +78,7 @@ public:
 	void check();
 	void interrupt(const unsigned int &channel);
 	void updateBitChannel(const unsigned int &channel);
-	void timerSave(const numberS &nu, const unsigned int &m);
+	void timerSave(const numberS &nu);
 	void sendMidi(const unsigned int &nu, const unsigned int &Ti);
 
 private:
