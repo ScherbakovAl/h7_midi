@@ -8,7 +8,7 @@
 #pragma once
 
 #include "usb_device.h"
-#include <queue>
+#include <deque>
 #include <bitset>
 
 enum class NowOnOrOff {
@@ -96,10 +96,9 @@ private:
 	static const unsigned int divisible = 9'000'000;
 
 	NowOnOrOff midiOnOrOff = NowOnOrOff::midiOn;
-	std::queue<numberS> queeOn;
-//	std::queue<numberS> queeOff;
+	std::deque<numberS> queeOn;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
-	std::bitset<channelBits> bitsMidiOff[sizeMux];	// << size "channelBits"??
+	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	gpioBsrr gpio;
 	counterR counter;
 	volatile unsigned int mux = 0;

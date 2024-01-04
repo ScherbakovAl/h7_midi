@@ -154,7 +154,7 @@ void Keys::check() {
 		auto &front = queeOn.front();
 		if (TIM2->CNT - timer[front.number] > timeToCleanUp) {
 			bitsMidiOn[front.mu].set(front.cha);
-			queeOn.pop();
+			queeOn.pop_front();
 		}
 	}
 }
@@ -165,7 +165,7 @@ void Keys::interrupt(const unsigned int &channel) {
 	nnumb.set(channel, mux);
 	if (midiOnOrOff == NowOnOrOff::midiOn) {
 		bitsMidiOn[nnumb.mu].reset(channel);
-		queeOn.push(nnumb);
+		queeOn.push_back(nnumb);
 		timerSave(nnumb);
 	} else {
 		MidiSendOff(120, 13, notes[nnumb.number]);
@@ -181,7 +181,7 @@ void Keys::timerSave(const numberS &nu) {
 	} else {
 		auto time = Now - timer[nu.number - 1];
 		timer[nu.number] = Now;
-		sendMidi(nu.number - 1, time);
+		sendMidi(nu.number, time);
 		bitsMidiOff[nu.mu - 1].set(nu.cha);
 	}
 }
