@@ -17,12 +17,12 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <midi_keyboard.h>
 #include "main.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "maain.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -123,7 +123,7 @@ int main(void)
   HAL_Delay(10);
 //  SysTick->CTRL = 0;// HAL_Delay тогда не работает и usb глючит
   HAL_TIM_Base_Start(&htim2);
-  keys.init_bit_mask();
+//  keys.init_bit_mask();
   keys.wheel();
 //  gpio_bsrr bsrrr;//for tests
 

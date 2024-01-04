@@ -1,54 +1,83 @@
 /*
- * maain-2.cpp
+ * midi_keyboard.cpp
  *
  *  Created on: Sep 23, 2022
  *      Author: scherbakov
  */
 
-#include "main.h"
-#include "maain.h"
+#include <midi_keyboard.h>
+#include "usb_device.h"
+//#include "main.h"
 //#include "usbd_midi.h"
 
-using namespace std;
+//using namespace std;
 
-void gpio_bsrr::sh_ld() {
-	GPIOA->BSRR |= sh_ld_bsrr; // =
+//  ################################################## for ON
+void gpioBsrr::ShLdHi_On() {
+	GPIOA->BSRR |= shLdHi; 	// =
 }
-void gpio_bsrr::_sh_ld() {
-	GPIOA->BSRR |= _sh_ld_bsrr; // |=
+void gpioBsrr::ShLdLo_On() {
+	GPIOA->BSRR |= shLdLo; 	// |=
 }
-void gpio_bsrr::clk() {
-	GPIOA->BSRR |= clk_bsrr; // |=
+void gpioBsrr::ClkHi_On() {
+	GPIOA->BSRR |= clkHi;		// |=
 }
-void gpio_bsrr::_clk() {
-	GPIOA->BSRR |= _clk_bsrr; // =
+void gpioBsrr::ClkLo_On() {
+	GPIOA->BSRR |= clkLo;		// =
 }
-void gpio_bsrr::andd() {
-	GPIOA->BSRR |= andd_bsrr; // |=
+void gpioBsrr::AndHi_On() {
+	GPIOA->BSRR |= andOnHi;	// |=
 }
-void gpio_bsrr::_andd() {
-	GPIOA->BSRR |= _andd_bsrr; // = (последнее изменение было сдесь (по эксперименту с " |= и ="))
+void gpioBsrr::AndLo_On() {
+	GPIOA->BSRR |= andOnLo; 	// =
 }
-void gpio_bsrr::andd_off() {
-	GPIOA->BSRR |= and_off; // |=
+//  ################################################## for OFF
+void gpioBsrr::ShLdHi_Off() {
+	GPIOA->BSRR |= shLdHi; 	// =
 }
-void gpio_bsrr::_andd_off() {
-	GPIOA->BSRR |= _and_off; // = (последнее изменение было сдесь (по эксперименту с " |= и ="))
+void gpioBsrr::ShLdLo_Off() {
+	GPIOA->BSRR |= shLdLo; 	// |=
 }
-Numbers::Numbers(const unsigned int &channel, const unsigned int &mux_) :
-		number((channel << 4) + mux_), mu(mux_), cha(channel) {
+void gpioBsrr::ClkHi_Off() {
+	GPIOA->BSRR |= clkHi;		// |=
 }
-void Counter::reset() {
+void gpioBsrr::ClkLo_Off() {
+	GPIOA->BSRR |= clkLo;		// =
+}
+void gpioBsrr::AndOffHi_Off() {
+	GPIOA->BSRR |= andOffHi;		// |=
+}
+void gpioBsrr::AndOffLo_Off() {
+	GPIOA->BSRR |= andOffLo;		// =
+}
+//  ################################################## for tests
+void gpioBsrr::Test1() {
+	GPIOA->BSRR |= test1On;		// |=
+	GPIOA->BSRR |= test1Off;		// =
+}
+void gpioBsrr::Test2() {
+	GPIOA->BSRR |= test2On;		// |=
+	GPIOA->BSRR |= test2Off;		// =
+}
+//  ##################################################
+
+void numberS::set(const unsigned int &channel, const unsigned int &mux_) {
+	number = (channel << 4) + mux_;
+	mu = mux_;
+	cha = channel;
+}
+
+void counterR::reset() {
 	times = 0;
 	event = 0;
 }
-void Counter::twenty_times() {
+void counterR::twentyTimes() {
 	++times;
 }
-void Counter::event_occurred() {
+void counterR::eventOccurred() {
 	++event;
 }
-bool Counter::check() {
+bool counterR::check() {
 	if (event != 0 && times > 20) {
 		return (true);
 	} else {
@@ -57,109 +86,172 @@ bool Counter::check() {
 	return (false);
 }
 
-void Keys::number_note_setter() {
-	uint8_t zz = 69;
-	for (unsigned int i = 0; i < keyss;) {
+void Keys::numberNoteSetter() {
+	uint8_t zz = 21;
+	for (unsigned int i = 0; i < sensors;) {
 		notes[i] = zz;
 		notes[i + 1] = zz;
 		++zz;
 		i += 2;
 	}
 }
-
-void Keys::init_bit_mask() {
-	number_note_setter();
-	for (unsigned int sat = nule; sat < size_mux; ++sat) {
-//		bits[sat].set(0); //..
-//		bits[sat].set(1); //..
-//		bits[sat].set(2); //..
-//		bits[sat].set(3); //..
-		bits[sat].set(4);		//.. 1-2
-		bits[sat].set(5);		//.. 1-1
-		bits[sat].set(6);		//.. 2-1
-		bits[sat].set(7);		//.. 2-2
-		//		bits[sat].set(8);		//.. 2-3
-		//		bits[sat].set(9);//..
-		//		bits[sat].set(10);//..
+void Keys::initBitMask() {
+	numberNoteSetter();
+	for (unsigned int sat = zero; sat < sizeMux; ++sat) {
+		bitsMidiOn[sat].set(0);		// =1
+		bitsMidiOn[sat].set(1);		// =2
+		bitsMidiOn[sat].set(2);		// =3
+		bitsMidiOn[sat].set(3);		// =4
+		bitsMidiOn[sat].set(4);		// =5
+		bitsMidiOn[sat].set(5);		// =6
+		bitsMidiOn[sat].set(6);		// =7
+		bitsMidiOn[sat].set(7);		// =8
+		bitsMidiOn[sat].set(8);		// =9
+		bitsMidiOn[sat].set(9);		// =10
+		bitsMidiOn[sat].set(10);	// =11
 	}
+	for (unsigned int sat = zero; sat < sizeMux; ++sat) {
+		bitsMidiOff[sat].reset(0);		// =1
+		bitsMidiOff[sat].reset(1);		// =2
+		bitsMidiOff[sat].reset(2);		// =3
+		bitsMidiOff[sat].reset(3);		// =4
+		bitsMidiOff[sat].reset(4);		// =5
+		bitsMidiOff[sat].reset(5);		// =6
+		bitsMidiOff[sat].reset(6);		// =7
+		bitsMidiOff[sat].reset(7);		// =8
+		bitsMidiOff[sat].reset(8);		// =9
+		bitsMidiOff[sat].reset(9);		// =10
+		bitsMidiOff[sat].reset(10);		// =11
+	}
+	HAL_Delay(800);
 }
-
 void Keys::wheel() {
-	gpio.andd_off();		//чтобы не грелись микрухи управляющие "off"
+	gpio.AndOffHi_Off();		// чтобы не грелись микрухи управляющие "off"
+	initBitMask();
+	SysTick->CTRL = 0;// работает нормально с этой настройкой? (без него HAL_Delay отваливается)
 
 	while (1) {
-		mask_load_to_imr(0);
-		gpio.sh_ld();		//=
-		gpio._andd();		//=
-		gpio._sh_ld();		//|=
-		gpio.andd();		//|=
+//		gpio.Test1();		//синхронизация осциллографа
+#define ON
+#ifdef ON
+		midiOnOrOff = NowOnOrOff::midiOn;
+		for (int i = 0; i < 100; ++i) {
+			maskLoadMidiOn(0); 	// почему-то в такой последовательности работает
+			gpio.ShLdHi_On(); 		//  =
+			gpio.AndLo_On();		//  =
+			gpio.ShLdLo_On(); 		// |=
+			gpio.AndHi_On();		// |=
 
-//		gpio.andd_off();
-//		gpio._andd_off();
+			for (unsigned int i = one; i < sizeMux; ++i) {
+				maskLoadMidiOn(i);// почему-то в такой последовательности работает
+				gpio.ClkLo_On();		//  =
+				gpio.AndLo_On();		//  =
+				gpio.ClkHi_On();		// |=
+				gpio.AndHi_On();		// |=
+			}
+			check();
+		}
+#endif
+		midiOnOrOff = NowOnOrOff::midiOff;
+		maskLoadMidiOff(0);	// почему-то в такой последовательности работает
+		gpio.ShLdHi_Off(); 		//  =
+		gpio.AndOffLo_Off();		//  =
+		gpio.ShLdLo_Off(); 		// |=
+		gpio.AndOffHi_Off();		// |=
 
-		for (unsigned int i = one; i < size_mux; ++i) {
-			mask_load_to_imr(i);
-			gpio._clk();		//=
-			gpio._andd();		//=
-			gpio.clk();			//|=
-			gpio.andd();		//|=
+		for (unsigned int i = one; i < sizeMux; ++i) {
+			test1 = i;
+			maskLoadMidiOff(i);	// почему-то в такой последовательности работает
+			gpio.ClkLo_Off();		//  =
+			gpio.AndOffLo_Off();		//  =
+			gpio.ClkHi_Off();		// |=
+			gpio.AndOffHi_Off();		// |=
 		}
-		check();
-		counter.twenty_times();
-		if (counter.check()) {
-			//			USBD_MIDI_SendPacket();
-			counter.reset();
-		}
+
+//		check();
+
+//		counter.twenty_times();
+//		if (counter.check()) {
+////						USBD_MIDI_SendPacket();
+//			counter.reset();
+//		}
+
+//		test_timer = TIM2->CNT; // for test
+//		if (test_timer - test_timer_older > 1'000'000) {
+//			test_timer_older = test_timer;
+//			MidiSend(68, 35, 55);
+//		}
 	}
 }
-
-void Keys::mask_load_to_imr(const unsigned int &a) {
+void Keys::maskLoadMidiOn(const unsigned int &a) {
 	mux = a;
-	EXTI->IMR1 = bits[a].to_ulong();
+	EXTI->IMR1 = bitsMidiOn[a].to_ulong();
 }
-
+void Keys::maskLoadMidiOff(const unsigned int &a) {
+	mux = a;
+	EXTI->IMR1 = bitsMidiOff[a].to_ulong();
+}
 void Keys::check() {
-	if (!quee.empty()) {
-		auto &front = quee.front(); //Возвращает ссылку на первый элемент в начале queue
-		if (TIM2->CNT - timer[front.number] > time_to_clean_up) {
-			sensor_flag[front.number] = nule;
-			bits[front.mu].set(front.cha); //Устанавливает бит в позиции pos в значение value.
-			quee.pop(); //Удаляет элемент из начала queue
+//	if (midiOnOrOff == NowOnOrOff::midiOn) {
+	if (!queeOn.empty()) {
+		auto &front = queeOn.front(); //Возвращает ссылку на первый элемент в начале queue
+		if (TIM2->CNT - timer[front.number] > timeToCleanUp) {
+			sensorFlag[front.number] = zero;
+			bitsMidiOn[front.mu].set(front.cha); //Устанавливает бит в позиции pos в значение value.
+			queeOn.pop(); //Удаляет элемент из начала queue
 		}
 	}
+//	} else {
+//		// реализовать Off
+//	}
 }
-
 void Keys::interrupt(const unsigned int &channel) {
+	gpio.Test1(); // <<<<<<<<<<<< !!!!!!!!!!!!!! работает с оптимизацией -О1 (с -О3 не работает)
 	unsigned int muu = mux;
-	bits[muu].reset(channel);
-	Numbers nnumb(channel, muu);
-	quee.push(nnumb); //Добавляет элемент в конец queue
-	timer_save(nnumb, muu);
+	numberS nnumb;
+	nnumb.set(channel, muu);
+	if (midiOnOrOff == NowOnOrOff::midiOn) {
+		bitsMidiOn[muu].reset(channel);
+		queeOn.push(nnumb); //Добавляет элемент в конец queue
+//		if(queeOn.size() > 50)//когда оптимизация -О3 сваливается сюда
+//		{
+//			queeOn.pop();
+//		}
+		timerSave(nnumb, muu);
+	} else {
+//		if (muu % 2 == 1) { //?? надо ли?
+		bitsMidiOff[muu].reset(channel);
+//		MidiSendOff(120, 13, notes[nnumb.number]);
+//		}
+	}
+	gpio.Test2();
 }
-
-void Keys::timer_save(const Numbers &nu, const unsigned int &m) {
+void Keys::timerSave(const numberS &nu, const unsigned int &m) {
 	auto Ti = TIM2->CNT;
 	auto &numb = nu.number;
-	auto next = numb + one;
-	if (m % two) {
-		if (sensor_flag[numb] == nule
-				&& Ti - timer[numb - one] > re_triggering) { // какие здесь данные должны быть?
+	auto prev = numb - one;
+
+	if (m % 2 == 0) {			// - прохождение первого сенсора
+		if (sensorFlag[numb] == zero && Ti - timer[numb] > reTriggering) { // какие здесь данные должны быть?
 			timer[numb] = Ti;
-			sensor_flag[numb] = one;
+			sensorFlag[numb] = one;
 		}
-	} else if (auto time = Ti - timer[next]; sensor_flag[next] == one
-			&& time > time_min && time < time_max) {
+
+	} else if (auto time = Ti - timer[prev]; sensorFlag[prev] == one // - прохождение второго сенсора
+	&& time > timeMin && time < timeMax) {
 		timer[numb] = Ti;
-		send_midi(numb, time);
-		sensor_flag[next] = two;
+		sendMidi(prev, time);
+		sensorFlag[numb] = two;
+		bitsMidiOff[m - 1].set(nu.cha);
 	}
 }
-
-void Keys::send_midi(const unsigned int &nu, const unsigned int &Ti) {
+void Keys::sendMidi(const unsigned int &nu, const unsigned int &Ti) {
 	auto midi_speed = divisible / Ti; //200-50000
 
-	auto midi_hi = midi_speed / max_midi;
-	auto midi_lo = midi_speed - midi_hi * max_midi; //			midi_speed - (midi_speed / max_midi * max_midi);
+	auto midi_hi = midi_speed / maxMidi;
+	auto midi_lo = midi_speed - midi_hi * maxMidi; //			midi_speed - (midi_speed / max_midi * max_midi);
+
+//	MidiSend(midi_hi, midi_lo, notes[nu]);//86, 75, 58//midi_hi, midi_lo, notes[nu]
 
 	//	test_in_time = superTimer;
 	//	test_in_speed = Ti;
@@ -170,7 +262,6 @@ void Keys::send_midi(const unsigned int &nu, const unsigned int &Ti) {
 	//	USBD_AddNoteOn3(notes[nu], midi_lo, midi_hi);
 	//	USBD_SendMidiMessages();
 	//	USBD_MIDI_SendPacket2();
-
-	counter.event_occurred();
+//	counter.event_occurred();
 }
 
