@@ -20,7 +20,7 @@
 #include <midi_keyboard.h>
 #include "main.h"
 #include "usb_device.h"
-
+// git test in "изменение_из_midi_controller............"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
