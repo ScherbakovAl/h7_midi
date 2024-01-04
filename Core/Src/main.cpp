@@ -57,29 +57,29 @@ extern "C" void Error_Handler();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-const unsigned int extpr0 = 1;
-const unsigned int extpr1 = 2;
-const unsigned int extpr2 = 4;
-const unsigned int extpr3 = 8;
-const unsigned int extpr4 = 16;
-const unsigned int extpr5 = 32;
-const unsigned int extpr6 = 64;
-const unsigned int extpr7 = 128;
-const unsigned int extpr8 = 256;
-const unsigned int extpr9 = 512;
-const unsigned int extpr10 = 1024;
+cuint extpr0 = 1;
+cuint extpr1 = 2;
+cuint extpr2 = 4;
+cuint extpr3 = 8;
+cuint extpr4 = 16;
+cuint extpr5 = 32;
+cuint extpr6 = 64;
+cuint extpr7 = 128;
+cuint extpr8 = 256;
+cuint extpr9 = 512;
+cuint extpr10 = 1024;
 
-const unsigned int interrupt0 = 0;
-const unsigned int interrupt1 = 1;
-const unsigned int interrupt2 = 2;
-const unsigned int interrupt3 = 3;
-const unsigned int interrupt4 = 4;
-const unsigned int interrupt5 = 5;
-const unsigned int interrupt6 = 6;
-const unsigned int interrupt7 = 7;
-const unsigned int interrupt8 = 8;
-const unsigned int interrupt9 = 9;
-const unsigned int interrupt10 = 10;
+cuint interrupt0 = 0;
+cuint interrupt1 = 1;
+cuint interrupt2 = 2;
+cuint interrupt3 = 3;
+cuint interrupt4 = 4;
+cuint interrupt5 = 5;
+cuint interrupt6 = 6;
+cuint interrupt7 = 7;
+cuint interrupt8 = 8;
+cuint interrupt9 = 9;
+cuint interrupt10 = 10;
 Keys keys;
 /* USER CODE END 0 */
 

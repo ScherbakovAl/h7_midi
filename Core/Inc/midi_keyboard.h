@@ -11,6 +11,9 @@
 #include <deque>
 #include <bitset>
 
+using uint = unsigned int;
+using cuint = const uint;
+
 enum class NowOnOrOff {
 	midiOn, midiOff
 };
@@ -35,81 +38,70 @@ public:
 	void Test2();
 
 private:
-	const unsigned int shLdHi = 0x1;
-	const unsigned int shLdLo = 0x10000;
-	const unsigned int clkHi = 0x2;
-	const unsigned int clkLo = 0x20000;
-	const unsigned int andOnHi = 0x4;
-	const unsigned int andOnLo = 0x40000;
-	const unsigned int andOffHi = 0x8;
-	const unsigned int andOffLo = 0x80000;
-	const unsigned int test1On = 0x010;
-	const unsigned int test1Off = 0x0100000;
-	const unsigned int test2On = 0x020;
-	const unsigned int test2Off = 0x0200000;
+	cuint shLdHi = 0x1;
+	cuint shLdLo = 0x10000;
+	cuint clkHi = 0x2;
+	cuint clkLo = 0x20000;
+	cuint andOnHi = 0x4;
+	cuint andOnLo = 0x40000;
+	cuint andOffHi = 0x8;
+	cuint andOffLo = 0x80000;
+	cuint test1On = 0x010;
+	cuint test1Off = 0x0100000;
+	cuint test2On = 0x020;
+	cuint test2Off = 0x0200000;
 };
 
 class numberS {
 public:
-	void set(const unsigned int &channel, volatile unsigned int &mux_);
-	unsigned int number = 0;
-	unsigned int mu = 0;
-	unsigned int cha = 0;
+	void set(cuint &channel, cuint &m);
+	uint number = 0;
+	uint mux = 0;
+	uint cha = 0;
 };
 
-class counterR {
+class muxer {
 public:
-	void reset();
-	void twentyTimes();
-	void eventOccurred();
-	bool check();
+	void toggle();
+	uint get() const;
+	void setSizeMux(cuint &s);
 private:
-	unsigned int times = 0;
-	unsigned int event = 0;
+	uint mux = 0;		//volatile??? надо протестить!
+	uint size;
 };
 
 class Keys {	//explicit ?
 public:
-	void numberNoteSetter();
-	void initBitMask();
 	void wheel();
-	void maskLoadMidiOn(const unsigned int &a);
-	void maskLoadMidiOff(const unsigned int &a);
-	void check();
-	void interrupt(const unsigned int &channel);
-	void updateBitChannel(const unsigned int &channel);
-	void timerSave(const numberS &nu);
-	void sendMidi(const unsigned int &nu, const unsigned int &Ti);
+	void interrupt(cuint &channel);
 
 private:
-	static const unsigned int sensors = 176;
-	static const unsigned int channelBits = 11;
-	static const unsigned int sizeMux = 16;
+	void numberNoteSetter();
+	void initBitMask();
+	void maskLoadMidiOn();
+	void maskLoadMidiOff();
+	void check();
+	void timerSave(const numberS &nu);
+	void sendMidi(cuint &nu, cuint &t);
 
-	static const unsigned int maxMidi = 127;
-	static const unsigned int overmaxMidi = 125;
+	static cuint sensors = 176;
+	static cuint channelBits = 11;
+	static cuint sizeMux = 16;
+	cuint maxMidi = 127;//static?
+	cuint reTriggering = 50'000;//static?
+	cuint timeToCleanUp = 50'000;//static?
+	cuint divisible = 9'000'000;//static?
+	cuint sizeM = sizeMux;//static?
 
-	static const unsigned int timeMin = 200;		//static?
-	static const unsigned int timeMax = 100'000;
-	static const unsigned int reTriggering = 50'000;
-	static const unsigned int timeToCleanUp = 50'000;
-	static const unsigned int divisible = 9'000'000;
-
+	muxer mux;
+	gpioBsrr gpio;
 	NowOnOrOff midiOnOrOff = NowOnOrOff::midiOn;
 	std::deque<numberS> queeOn;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
-	gpioBsrr gpio;
-	counterR counter;
-	volatile unsigned int mux = 0;
-	unsigned int timer[sensors] = { };
-	unsigned int sensorFlag[sensors] = { };
-	uint8_t notes[sensors];
-	static const unsigned int zero = 0;
-	static const unsigned int one = 1;
-	static const unsigned int two = 2;
-
-	//tests
-	int test1 = 0;
-	int test2 = 0;
+	uint timer[sensors] = { };
+	uint notes[sensors];
+	static cuint zero = 0;
+	static cuint one = 1;
+	static cuint two = 2;
 };
