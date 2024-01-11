@@ -34,7 +34,7 @@ public:
 	void AndOffHi_Off();		// +A3	(AND_OFF)
 	void AndOffLo_Off();		// -A3	(AND_OFF)
 
-	void Test1();		// в данном проекте не включено gpio должным образом!!!
+	void Test1(cuint us);		// в данном проекте не включено gpio должным образом!!!
 	void Test2();
 
 private:
@@ -50,6 +50,7 @@ private:
 	cuint test1Off = 0x0100000;
 	cuint test2On = 0x020;
 	cuint test2Off = 0x0200000;
+	uint testTimer = 0;//for test
 };
 
 class numberS {

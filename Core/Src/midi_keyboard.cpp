@@ -57,20 +57,20 @@ void gpioBsrr::AndOffHi_Off() {
 void gpioBsrr::AndOffLo_Off() {
 	GPIOA->BSRR |= andOffLo;	// =
 }
+// ################################################## for OFF
 
-// ################################################## for tests
-// в данном проекте не включено gpio должным образом!!!
-void gpioBsrr::Test1() {
+void gpioBsrr::Test1(cuint us) {
+	if(TIM2->CNT - testTimer > us){
+		 testTimer = TIM2->CNT;
 	GPIOA->BSRR |= test1On;		// |=
 	GPIOA->BSRR |= test1Off;	// =
+	}
 }
 
 void gpioBsrr::Test2() {
 	GPIOA->BSRR |= test2On;		// |=
 	GPIOA->BSRR |= test2Off;	// =
 }
-// в данном проекте не включено gpio должным образом!!!
-// ##################################################
 
 void numberS::set(cuint &channel, cuint &m) {
 	number = (channel << 4) + m;
@@ -104,10 +104,9 @@ void Keys::wheel() {
 	SysTick->CTRL = 0;
 
 	while (1) {
-		// gpio.Test1(); //синхронизация осциллографа // в данном проекте не включено gpio должным образом!!!
-
 		midiOnOrOff = NowOnOrOff::midiOn;
 		for (uint i = 0; i < 100; ++i) {
+			gpio.Test1(0); //for test
 			maskLoadMidiOn();
 			gpio.ShLdHi_On();	// =
 			gpio.AndLo_On();	// =
@@ -115,6 +114,7 @@ void Keys::wheel() {
 			gpio.AndHi_On();	// |=
 
 			for (uint i = one; i < sizeMux; ++i) {
+					gpio.Test1(0); //for test
 				maskLoadMidiOn();
 				gpio.ClkLo_On();	// =
 				gpio.AndLo_On();	// =

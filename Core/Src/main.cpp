@@ -16,20 +16,8 @@
   ******************************************************************************
   */
 
-//#include <cmsis_gcc.h>
-//#include <core_cm7.h>
 #include <main.h>
 #include <midi_keyboard.h>
-//#include <stm32h743xx.h>
-//#include <stm32h7xx_hal_cortex.h>
-//#include <stm32h7xx_hal_def.h>
-//#include <stm32h7xx_hal_flash_ex.h>
-//#include <stm32h7xx_hal_gpio.h>
-//#include <stm32h7xx_hal_pwr.h>
-//#include <stm32h7xx_hal_pwr_ex.h>
-//#include <stm32h7xx_hal_rcc.h>
-//#include <stm32h7xx_hal_tim.h>
-//#include <stm32h7xx_hal_tim_ex.h>
 #include <usb_device.h>
 
 TIM_HandleTypeDef htim2;
@@ -151,9 +139,10 @@ static void MX_GPIO_Init(void)	{
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
 
-    HAL_GPIO_WritePin(GPIOA, CLK_Pin|AND_OFF_Pin|SH_LD_Pin|AND_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, SH_LD_Pin | CLK_Pin | AND_Pin | AND_OFF_Pin | (uint16_t)0x0010 | (uint16_t)0x0020, //for test
+    				GPIO_PIN_RESET);
 
-    GPIO_InitStruct.Pin = CLK_Pin|AND_OFF_Pin|SH_LD_Pin|AND_Pin;
+    GPIO_InitStruct.Pin = SH_LD_Pin | CLK_Pin | AND_Pin | AND_OFF_Pin | (uint16_t)0x0010 | (uint16_t)0x0020;//for test
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -244,7 +233,3 @@ void Error_Handler(void){
   __disable_irq();
   while (1)  {	}
 }
-
-#ifdef  USE_FULL_ASSERT
-void assert_failed(uint8_t *file, uint32_t line)	{}
-#endif
