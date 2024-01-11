@@ -67,7 +67,7 @@ public:
 	uint get() const;
 	void setSizeMux(cuint &s);
 private:
-	volatile uint mux = 0;		//volatile??? надо протестить!
+	uint mux = 0;
 	uint size;
 };
 
