@@ -59,12 +59,12 @@ void gpioBsrr::AndOffLo_Off() {
 }
 // ################################################## for OFF
 
-void gpioBsrr::Test1(cuint us) {
-	if(TIM2->CNT - testTimer > us){
-		 testTimer = TIM2->CNT;
+void gpioBsrr::Test1() {
+//	if(TIM2->CNT - testTimer > us){
+//		 testTimer = TIM2->CNT;
 	GPIOA->BSRR |= test1On;		// |=
 	GPIOA->BSRR |= test1Off;	// =
-	}
+//	}
 }
 
 void gpioBsrr::Test2() {
@@ -106,7 +106,6 @@ void Keys::wheel() {
 	while (1) {
 		midiOnOrOff = NowOnOrOff::midiOn;
 		for (uint i = 0; i < 100; ++i) {
-			gpio.Test1(0); //for test
 			maskLoadMidiOn();
 			gpio.ShLdHi_On();	// =
 			gpio.AndLo_On();	// =
@@ -114,7 +113,6 @@ void Keys::wheel() {
 			gpio.AndHi_On();	// |=
 
 			for (uint i = one; i < sizeMux; ++i) {
-					gpio.Test1(0); //for test
 				maskLoadMidiOn();
 				gpio.ClkLo_On();	// =
 				gpio.AndLo_On();	// =
@@ -161,7 +159,6 @@ void Keys::check() {
 }
 
 void Keys::interrupt(cuint &channel) {
-//	gpio.Test1();// test // в данном проекте не включено gpio должным образом!!!
 	numberS nnumb;
 	nnumb.set(channel, mux.get());
 	if (midiOnOrOff == NowOnOrOff::midiOn) {
@@ -172,7 +169,6 @@ void Keys::interrupt(cuint &channel) {
 		MidiSendOff(120, 13, notes[nnumb.number]);
 		bitsMidiOff[nnumb.mux].reset(channel);
 	}
-//	gpio.Test2();// test // в данном проекте не включено gpio должным образом!!!
 }
 
 void Keys::timerSave(const numberS &nu) {
@@ -180,10 +176,12 @@ void Keys::timerSave(const numberS &nu) {
 	if (nu.mux % 2 == 0) {
 		timer[nu.number] = Now;
 	} else {
+		gpio.Test1(); //for test
 		auto time = Now - timer[nu.number - 1];
 		timer[nu.number] = Now;
 		sendMidi(nu.number, time);
 		bitsMidiOff[nu.mux - 1].set(nu.cha);
+		gpio.Test2(); //for test
 	}
 }
 

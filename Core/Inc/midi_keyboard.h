@@ -34,7 +34,7 @@ public:
 	void AndOffHi_Off();		// +A3	(AND_OFF)
 	void AndOffLo_Off();		// -A3	(AND_OFF)
 
-	void Test1(cuint us);		// в данном проекте не включено gpio должным образом!!!
+	void Test1();		// в данном проекте не включено gpio должным образом!!!
 	void Test2();
 
 private:
@@ -67,7 +67,7 @@ public:
 	uint get() const;
 	void setSizeMux(cuint &s);
 private:
-	uint mux = 0;		//volatile??? надо протестить!
+	volatile uint mux = 0;		//volatile??? надо протестить!
 	uint size;
 };
 
