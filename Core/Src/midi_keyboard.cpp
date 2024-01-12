@@ -154,15 +154,14 @@ void Keys::check() {
 	if (!queeOn.empty()) {
 		auto &front = queeOn.front();
 		if (TIM2->CNT - timer[front.number] > timeToCleanUp) {
-//			gpio.Test2(); //for test
 			bitsMidiOn[front.mux].set(front.cha);
 			queeOn.pop_front();
+			gpio.Test2(); //for test
 		}
 	}
 }
 
 void Keys::interrupt(cuint &channel) {
-//	gpio.Test1(); //for test
 	numberS nnumb;
 	nnumb.set(channel, mux.get());
 	if (midiOnOrOff == NowOnOrOff::midiOn) {
@@ -173,6 +172,7 @@ void Keys::interrupt(cuint &channel) {
 		MidiSendOff(120, 13, notes[nnumb.number]);
 		bitsMidiOff[nnumb.mux].reset(channel);
 	}
+	gpio.Test1(); //for test
 }
 
 void Keys::timerSave(const numberS &nu) {
