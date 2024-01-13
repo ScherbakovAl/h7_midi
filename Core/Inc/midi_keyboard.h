@@ -88,16 +88,17 @@ private:
 	static cuint sensors = 176;
 	static cuint channelBits = 11;
 	static cuint sizeMux = 16;
-	cuint maxMidi = 127;//static?
-	cuint reTriggering = 50'000;//static?
-	cuint timeToCleanUp = 50'000;//static?
-	cuint divisible = 9'000'000;//static?
-	cuint sizeM = sizeMux;//static?
+	cuint maxMidi = 127;
+	cuint reTriggering = 50'000;
+	cuint timeToCleanUp = 50'000;
+	cuint divisible = 9'000'000; // 119.102 speed = 600us
+	cuint sizeM = sizeMux;
 
 	muxer mux;
 	gpioBsrr gpio;
 	NowOnOrOff midiOnOrOff = NowOnOrOff::midiOn;
 	std::deque<numberS> queeOn;
+	std::deque<numberS> queeOff;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	uint timer[sensors] = { };

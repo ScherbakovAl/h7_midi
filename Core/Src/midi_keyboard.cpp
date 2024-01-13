@@ -105,7 +105,7 @@ void Keys::wheel() {
 
 	while (1) {
 		midiOnOrOff = NowOnOrOff::midiOn;
-		for (uint i = 0; i < 100; ++i) {
+//		for (uint i = 0; i < 100; ++i) {
 			maskLoadMidiOn();
 			gpio.ShLdHi_On();	// =
 			gpio.AndLo_On();	// =
@@ -122,7 +122,7 @@ void Keys::wheel() {
 				mux.toggle();
 			}
 			check();
-		}
+//		}
 		midiOnOrOff = NowOnOrOff::midiOff;
 		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
@@ -156,7 +156,6 @@ void Keys::check() {
 		if (TIM2->CNT - timer[front.number] > timeToCleanUp) {
 			bitsMidiOn[front.mux].set(front.cha);
 			queeOn.pop_front();
-			gpio.Test2(); //for test
 		}
 	}
 }
@@ -168,9 +167,10 @@ void Keys::interrupt(cuint &channel) {
 		bitsMidiOn[nnumb.mux].reset(channel);
 		queeOn.push_back(nnumb);
 		timerSave(nnumb);
-	} else {
+	} else {//добавлять в очередь и отправлять спустя время..
 		MidiSendOff(120, 13, notes[nnumb.number]);
 		bitsMidiOff[nnumb.mux].reset(channel);
+		gpio.Test2(); //for test
 	}
 	gpio.Test1(); //for test
 }
