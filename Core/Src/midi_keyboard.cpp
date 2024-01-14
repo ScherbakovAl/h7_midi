@@ -106,22 +106,22 @@ void Keys::wheel() {
 	while (1) {
 		midiOnOrOff = NowOnOrOff::midiOn;
 //		for (uint i = 0; i < 100; ++i) {
+		maskLoadMidiOn();
+		gpio.ShLdHi_On();	// =
+		gpio.AndLo_On();	// =
+		gpio.ShLdLo_On();	// |=
+		gpio.AndHi_On();	// |=
+		mux.toggle();
+
+		for (uint o = one; o < sizeMux; ++o) {
 			maskLoadMidiOn();
-			gpio.ShLdHi_On();	// =
+			gpio.ClkLo_On();	// =
 			gpio.AndLo_On();	// =
-			gpio.ShLdLo_On();	// |=
+			gpio.ClkHi_On();	// |=
 			gpio.AndHi_On();	// |=
 			mux.toggle();
-
-			for (uint o = one; o < sizeMux; ++o) {
-				maskLoadMidiOn();
-				gpio.ClkLo_On();	// =
-				gpio.AndLo_On();	// =
-				gpio.ClkHi_On();	// |=
-				gpio.AndHi_On();	// |=
-				mux.toggle();
-			}
-			check();
+		}
+		check();
 //		}
 		midiOnOrOff = NowOnOrOff::midiOff;
 		maskLoadMidiOff();
@@ -134,9 +134,11 @@ void Keys::wheel() {
 		for (uint p = one; p < sizeMux; ++p) {
 			maskLoadMidiOff();
 			gpio.ClkLo_Off();	// =
-			gpio.AndOffLo_Off();	// =
+			if (!(p % 2))
+				gpio.AndOffLo_Off();	// =
 			gpio.ClkHi_Off();	// |=
-			gpio.AndOffHi_Off();	// |=
+			if (!(p % 2))
+				gpio.AndOffHi_Off();	// |=
 			mux.toggle();
 		}
 	}
@@ -167,7 +169,7 @@ void Keys::interrupt(cuint &channel) {
 		bitsMidiOn[nnumb.mux].reset(channel);
 		queeOn.push_back(nnumb);
 		timerSave(nnumb);
-	} else {//добавлять в очередь и отправлять спустя время..
+	} else {	//добавлять в очередь и отправлять спустя время..
 		MidiSendOff(120, 13, notes[nnumb.number]);
 		bitsMidiOff[nnumb.mux].reset(channel);
 		gpio.Test2(); //for test
@@ -209,4 +211,3 @@ void muxer::toggle() {
 void muxer::setSizeMux(cuint &s) {
 	size = s;
 }
-

@@ -50,7 +50,7 @@ private:
 	cuint test1Off = 0x0100000;
 	cuint test2On = 0x020;
 	cuint test2Off = 0x0200000;
-	uint testTimer = 0;//for test
+	uint testTimer = 0;		//for test
 };
 
 class numberS {

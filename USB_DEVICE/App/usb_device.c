@@ -58,7 +58,6 @@ void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
 
 void MX_USB_DEVICE_Init(void) {
 
-
 	if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK) {
 		Error_Handler();
 	}
@@ -88,12 +87,11 @@ void MX_USB_DEVICE_Init(void) {
 
 //	HAL_Delay(100);
 
-	for (int a = 0; a <= 4; ++a) {//куда пропадает первое сообщение?
+	for (int a = 0; a <= 4; ++a) { //куда пропадает первое сообщение?
 //		USBD_LL_Transmit(&hUsbDeviceFS, 0x81, txbuf, 8);
 		CDC_Transmit_FS(txbuf, 8);	// usbd_cdc_if.c
 		HAL_Delay(100);
 	}
 
 }
-
 
