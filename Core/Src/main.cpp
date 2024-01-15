@@ -231,9 +231,12 @@ void EXTI15_10_IRQHandler(void) {
 		keys.interrupt(interrupt10);
 	}
 }
+
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+
 void OTG_FS_IRQHandler(void) {
 	HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+	keys.midiFree();
 }
 } // extern "C"
 

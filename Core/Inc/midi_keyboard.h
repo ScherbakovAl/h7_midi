@@ -18,6 +18,10 @@ enum class NowOnOrOff {
 	midiOn, midiOff
 };
 
+enum class isMidiSendReady { //new
+	NOREADY, READY
+};
+
 class gpioBsrr {
 public:
 	void ShLdHi_On();		// +A0	(+SH/LD)
@@ -61,6 +65,13 @@ public:
 	uint cha = 0;
 };
 
+class deck {		//new
+public:
+	cuint hi = 0;
+	cuint lo = 0;
+	cuint note = 0;
+};
+
 class muxer {
 public:
 	void toggle();
@@ -75,6 +86,7 @@ class Keys {	//explicit ?
 public:
 	void wheel();
 	void interrupt(cuint &channel);
+	void midiFree();	//new
 
 private:
 	void numberNoteSetter();
@@ -84,6 +96,7 @@ private:
 	void check();
 	void timerSave(const numberS &nu);
 	void sendMidi(cuint &nu, cuint &t);
+	void midiBusy();
 
 	static cuint sensors = 176;
 	static cuint channelBits = 11;
@@ -97,8 +110,10 @@ private:
 	muxer mux;
 	gpioBsrr gpio;
 	NowOnOrOff midiOnOrOff = NowOnOrOff::midiOn;
+	isMidiSendReady sendFree = isMidiSendReady::READY; //new
 	std::deque<numberS> queeOn;
-	std::deque<numberS> queeOff;
+	std::deque<deck> midiChannelFree; //new
+//	std::deque<numberS> queeOff;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	uint timer[sensors] = { };
