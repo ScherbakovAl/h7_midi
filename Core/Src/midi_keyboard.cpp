@@ -7,7 +7,7 @@
  */
 
 #include <midi_keyboard.h>
-
+//git comment test 1
 // ################################################## for ON
 void gpioBsrr::ShLdHi_On() {
 	GPIOA->BSRR |= shLdHi;		// =
