@@ -164,7 +164,6 @@ void Keys::check() {
 		sendFree = isMidiSendReady::NOREADY;
 		auto &front = midiChannelFree.front();
 		MidiSendOn(front.hi, front.lo, front.note);
-		gpio.Test2(); //for test
 		midiChannelFree.pop_front();
 	}
 }
@@ -179,9 +178,7 @@ void Keys::interrupt(cuint &channel) {
 	} else {	//добавлять в очередь и отправлять спустя время..
 		MidiSendOff(120, 13, notes[nnumb.number]);
 		bitsMidiOff[nnumb.mux].reset(channel);
-//		gpio.Test2(); //for test
 	}
-//	gpio.Test1(); //for test
 }
 
 void Keys::timerSave(const numberS &nu) {
@@ -194,11 +191,11 @@ void Keys::timerSave(const numberS &nu) {
 
 		// в очередь. Если off не сработал - то сразу добавить событие off, иначе просто миди on
 		sendMidi(nu.number, time); //<<<<<<<<<<<<<<<<<<<<<<
-		sendMidi(nu.number + 2, time + 200); //<<<<<<<<<<<<<<<<<<<<<<
-		sendMidi(nu.number + 4, time + 400); //<<<<<<<<<<<<<<<<<<<<<<
-		sendMidi(nu.number + 6, time + 600); //<<<<<<<<<<<<<<<<<<<<<<
+//		sendMidi(nu.number + 2, time + 200); //<<<<<<<<<<<<<<<<<<<<<<
+//		sendMidi(nu.number + 4, time + 400); //<<<<<<<<<<<<<<<<<<<<<<
+//		sendMidi(nu.number + 6, time + 600); //<<<<<<<<<<<<<<<<<<<<<<
 
-//		bitsMidiOff[nu.mux - 1].set(nu.cha);
+		bitsMidiOff[nu.mux - 1].set(nu.cha);
 	}
 }
 
@@ -230,5 +227,4 @@ void muxer::setSizeMux(cuint &s) {
 
 void Keys::midiFree() {
 	sendFree = isMidiSendReady::READY;
-	gpio.Test1(); //for test
 }

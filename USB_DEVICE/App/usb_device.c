@@ -24,36 +24,39 @@
 #include "usbd_cdc_if.h"
 
 USBD_HandleTypeDef hUsbDeviceFS;
+USBD_CDC_HandleTypeDef *hcdcdc;
 
 void MidiSendOn(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
-	uint8_t txbuf[8];
-	txbuf[0] = 0x9; //??
-	txbuf[1] = 0xB0 | 0x00; //0xB0 - Control Change (for hi-res midi) | channel
-	txbuf[2] = 0x7F & 88; // 88 (for hi-res midi)
-	txbuf[3] = 0x7F & vel_midi_lo; //velocity xx.75
+	uint8_t txbuf[8]; // можно размер и 512
+	txbuf[0] = 9; 	// ??
+	txbuf[1] = 176; // 176 (for hi-res midi)
+	txbuf[2] = 88; 	// 88 (for hi-res midi)
+	txbuf[3] = vel_midi_lo; // velocity xx.75
 
-	txbuf[4] = 0x9; //??
-	txbuf[5] = 0x90 | 0x00; //0x8 - note off, 0x9 - note on | channel
-	txbuf[6] = 0x7F & note; //number note
-	txbuf[7] = 0x7F & vel_midi_hi; //velocity 86.xx
-
-//		USBD_LL_Transmit(&hUsbDeviceFS, 0x81, txbuf, 8);
-	CDC_Transmit_FS(txbuf, 8);	// usbd_cdc_if.c //?
+	txbuf[4] = 9; 	// ?
+	txbuf[5] = 144; // 0x90(144) - note on, 0x80(128) - note off
+	txbuf[6] = note; // number note
+	txbuf[7] = vel_midi_hi; //velocity 86.xx
+	USBD_CDC_EP0_RxReady();
+	if (hcdcdc->TxState == 0) { //(0==свободно, !0==занято)
+		USBD_CDC_SetTxBuffer(&hUsbDeviceFS, txbuf, 8);
+		USBD_CDC_TransmitPacket(&hUsbDeviceFS);//долгая функция, что можно упростить?
+	}
 }
+
 void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
 	uint8_t txbuf[8];
-	txbuf[0] = 0x9; //??
-	txbuf[1] = 0xB0 | 0x00; //0xB0 - Control Change (for hi-res midi) | channel
-	txbuf[2] = 0x7F & 88; // 88 (for hi-res midi)
-	txbuf[3] = 0x7F & vel_midi_lo; //velocity xx.75
+	txbuf[0] = 9; //??
+	txbuf[1] = 176; // 176 (for hi-res midi)
+	txbuf[2] = 88; // 88 (for hi-res midi)
+	txbuf[3] = vel_midi_lo; //velocity xx.75
 
-	txbuf[4] = 0x9; //??
-	txbuf[5] = 0x80 | 0x00; //0x8 - note off, 0x9 - note on | channel
-	txbuf[6] = 0x7F & note; //number note
-	txbuf[7] = 0x7F & vel_midi_hi; //velocity 86.xx
+	txbuf[4] = 9; //??
+	txbuf[5] = 128; // 0x90(144) - note on, 0x80(128) - note off
+	txbuf[6] = note; //number note
+	txbuf[7] = vel_midi_hi; //velocity 86.xx
 
-//		USBD_LL_Transmit(&hUsbDeviceFS, 0x81, txbuf, 8);
-	CDC_Transmit_FS(txbuf, 8);	// usbd_cdc_if.c //?
+	CDC_Transmit_FS(txbuf, 8);
 }
 
 void MX_USB_DEVICE_Init(void) {
@@ -74,24 +77,24 @@ void MX_USB_DEVICE_Init(void) {
 
 	HAL_PWREx_EnableUSBVoltageDetector();
 
-	uint8_t txbuf[8];
-	txbuf[0] = 0x9; //??
-	txbuf[1] = 0x90; //0xB0 - Control Change (for hi-res midi) | channel
-	txbuf[2] = 52; //note // 88 (for hi-res midi)
-	txbuf[3] = 70; //vel  // velocity xx.75
+	uint8_t txbuf[8]; //start midi mini test
+//on
+	txbuf[0] = 9; 	//??
+	txbuf[1] = 144; //0x90(144) - note on, 0x80(128) - note off //0xB0 - Control Change (for hi-res midi) | channel
+	txbuf[2] = 55;	//note	// 88 (for hi-res midi)
+	txbuf[3] = 60; 	//vel	// velocity xx.75 (for hi-res midi)
 
-	txbuf[4] = 0x9; //??
-	txbuf[5] = 0x80 | 0x00; //0x80 - note off, 0x90 - note on | channel
-	txbuf[6] = 0x7F & 52; //number note
-	txbuf[7] = 0x7F & 86; //velocity 86.xx
+//off
+	txbuf[4] = 9;	//0x09	//??
+	txbuf[5] = 128;	//0x90(144) - note on, 0x80(128) - note off | channel
+	txbuf[6] = 55;	//note
+	txbuf[7] = 120; //vel	//velocity 86.xx (for hi-res midi)
 
-//	HAL_Delay(100);
+	HAL_Delay(600);
 
-	for (int a = 0; a <= 4; ++a) { //куда пропадает первое сообщение?
-//		USBD_LL_Transmit(&hUsbDeviceFS, 0x81, txbuf, 8);
-		CDC_Transmit_FS(txbuf, 8);	// usbd_cdc_if.c
-		HAL_Delay(100);
-	}
+	CDC_Transmit_FS(txbuf, 8);
+	HAL_Delay(100);
+	CDC_Transmit_FS(txbuf, 8);
 
+	hcdcdc = (USBD_CDC_HandleTypeDef*) hUsbDeviceFS.pClassData; // свободно для отправки? "if (hcdcdc->TxState == ...)"; (0==свободно, !0==занято)
 }
-
