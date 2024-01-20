@@ -21,16 +21,16 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USB_DEVICE__H__
 #define __USB_DEVICE__H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <midi_keyboard.h>
+#include <deque>
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx.h"
 #include "stm32h7xx_hal.h"
 #include "usbd_def.h"
-
 /* USER CODE BEGIN INCLUDE */
 
 /* USER CODE END INCLUDE */
@@ -56,13 +56,16 @@ extern "C" {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+class Note;
 /* USER CODE END PFP */
 
 /*
  * -- Insert your variables declaration here --
  */
 /* USER CODE BEGIN VARIABLES */
+
+void MidiSender(std::deque<Note> &deqNote, uint8_t *buf);
+void MX_USB_DEVICE_Init(void);
 
 /* USER CODE END VARIABLES */
 /**
@@ -75,13 +78,13 @@ extern "C" {
  */
 
 /** USB Device initialization function. */
-void MX_USB_DEVICE_Init(void);
+
 
 /*
  * -- Insert functions declaration here --
  */
 /* USER CODE BEGIN FD */
-void MidiSender(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note, uint8_t OnOff);
+
 /* USER CODE END FD */
 /**
  * @}
@@ -95,8 +98,7 @@ void MidiSender(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note, uint8_t 
  * @}
  */
 
-#ifdef __cplusplus
-}
-#endif
-
+//#ifdef __cplusplus
+//}
+//#endif
 #endif /* __USB_DEVICE__H__ */

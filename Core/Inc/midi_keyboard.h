@@ -16,11 +16,6 @@ using cuint = const uint;
 
 enum class OnOrOff {
 	midiOff = 128, midiOn = 144
-
-};
-
-enum class isMidiSendReady { //new
-	NOREADY, READY
 };
 
 class gpioBsrr {
@@ -39,7 +34,7 @@ public:
 	void AndOffHi_Off();		// +A3	(AND_OFF)
 	void AndOffLo_Off();		// -A3	(AND_OFF)
 
-	void Test1();		// в данном проекте не включено gpio должным образом!!!
+	void Test1();
 	void Test2();
 
 private:
@@ -65,7 +60,7 @@ public:
 	uint cha = 0;
 };
 
-class Note {		//new
+class Note {
 public:
 	cuint hi = 0;
 	cuint lo = 0;
@@ -109,12 +104,13 @@ private:
 	muxer mux;
 	gpioBsrr gpio;
 	OnOrOff midiOnOrOff = OnOrOff::midiOn;
-	std::deque<numberS> queeOn;
-	std::deque<Note> queeMidiSend; //new
+	std::deque<numberS> dequeOn;
+	std::deque<Note> dequeNotes;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	uint timer[sensors] = { };
 	uint notes[sensors];
+	uint8_t bufNotes[512] = { };
 	static cuint zero = 0;
 	static cuint one = 1;
 	static cuint two = 2;

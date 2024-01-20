@@ -26,38 +26,35 @@
 USBD_HandleTypeDef hUsbDeviceFS;
 USBD_CDC_HandleTypeDef *hcdcdc;
 
-void MidiSender(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note, uint8_t OnOff) {
-	uint8_t txbuf[8]; // можно размер и 512
-	txbuf[0] = 9; 	// ??
-	txbuf[1] = 176; // 176 (for hi-res midi)
-	txbuf[2] = 88; 	// 88 (for hi-res midi)
-	txbuf[3] = vel_midi_lo; // velocity xx.75
-
-	txbuf[4] = 9; 	// ?
-	txbuf[5] = OnOff; // 0x90(144) - note on, 0x80(128) - note off
-	txbuf[6] = note; // number note
-	txbuf[7] = vel_midi_hi; //velocity 86.xx
-
+void MidiSender(std::deque<Note> &deqNote, uint8_t *buf) {
 	if (hcdcdc->TxState == 0) { //(0==свободно, !0==занято)
-		USBD_CDC_SetTxBuffer(&hUsbDeviceFS, txbuf, 8);
-		USBD_CDC_TransmitPacket(&hUsbDeviceFS);//долгая функция, что можно упростить?
+		int s = 0;
+		int i = deqNote.size() * 8;
+		if (i > 512) {
+			deqNote.resize(64);
+			i = 512;
+		}
+
+		for (auto &n : deqNote) {
+			buf[s] = 9; // ??
+			buf[s + 1] = 176; // 176 (for hi-res midi)
+			buf[s + 2] = 88; // 88 (for hi-res midi)
+			buf[s + 3] = n.lo; // velocity xx.75
+
+			buf[s + 4] = 9; // ?
+			buf[s + 5] = uint8_t(n.mO); // 0x90(144) - note on, 0x80(128) - note off
+			buf[s + 6] = n.note; // number note
+			buf[s + 7] = n.hi; // velocity 86.xx
+
+			s += 8;
+		}
+
+		deqNote.clear();
+
+		USBD_CDC_SetTxBuffer(&hUsbDeviceFS, buf, i);
+		USBD_CDC_TransmitPacket(&hUsbDeviceFS);
 	}
 }
-
-//void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
-//	uint8_t txbuf[8];
-//	txbuf[0] = 9; //??
-//	txbuf[1] = 176; // 176 (for hi-res midi)
-//	txbuf[2] = 88; // 88 (for hi-res midi)
-//	txbuf[3] = vel_midi_lo; //velocity xx.75
-//
-//	txbuf[4] = 9; //??
-//	txbuf[5] = 128; // 0x90(144) - note on, 0x80(128) - note off
-//	txbuf[6] = note; //number note
-//	txbuf[7] = vel_midi_hi; //velocity 86.xx
-//
-//	CDC_Transmit_FS(txbuf, 8);
-//}
 
 void MX_USB_DEVICE_Init(void) {
 
@@ -79,15 +76,15 @@ void MX_USB_DEVICE_Init(void) {
 
 	uint8_t txbuf[8]; //start midi mini test
 //on
-	txbuf[0] = 9; 	//??
+	txbuf[0] = 9; //??
 	txbuf[1] = 144; //0x90(144) - note on, 0x80(128) - note off //0xB0 - Control Change (for hi-res midi) | channel
-	txbuf[2] = 55;	//note	// 88 (for hi-res midi)
-	txbuf[3] = 60; 	//vel	// velocity xx.75 (for hi-res midi)
+	txbuf[2] = 55; //note	// 88 (for hi-res midi)
+	txbuf[3] = 60; //vel	// velocity xx.75 (for hi-res midi)
 
 //off
-	txbuf[4] = 9;	//0x09	//??
-	txbuf[5] = 128;	//0x90(144) - note on, 0x80(128) - note off | channel
-	txbuf[6] = 55;	//note
+	txbuf[4] = 9; //0x09	//??
+	txbuf[5] = 128; //0x90(144) - note on, 0x80(128) - note off | channel
+	txbuf[6] = 55; //note
 	txbuf[7] = 120; //vel	//velocity 86.xx (for hi-res midi)
 
 	HAL_Delay(600);
@@ -97,4 +94,7 @@ void MX_USB_DEVICE_Init(void) {
 	CDC_Transmit_FS(txbuf, 8);
 
 	hcdcdc = (USBD_CDC_HandleTypeDef*) hUsbDeviceFS.pClassData; // свободно для отправки? "if (hcdcdc->TxState == ...)"; (0==свободно, !0==занято)
+}
+
+extern "C" {
 }
