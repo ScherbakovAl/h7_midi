@@ -81,8 +81,7 @@ void MX_USB_DEVICE_Init(void);
  * -- Insert functions declaration here --
  */
 /* USER CODE BEGIN FD */
-void MidiSendOn(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note);
-void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note);
+void MidiSender(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note, uint8_t OnOff);
 /* USER CODE END FD */
 /**
  * @}

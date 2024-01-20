@@ -104,7 +104,7 @@ void Keys::wheel() {
 	SysTick->CTRL = 0;
 
 	while (1) {
-		midiOnOrOff = NowOnOrOff::midiOn;
+		midiOnOrOff = OnOrOff::midiOn;
 //		for (uint i = 0; i < 100; ++i) {
 		maskLoadMidiOn();
 		gpio.ShLdHi_On();	// =
@@ -123,7 +123,7 @@ void Keys::wheel() {
 		}
 		check();
 //		}
-		midiOnOrOff = NowOnOrOff::midiOff;
+		midiOnOrOff = OnOrOff::midiOff;
 		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
 		gpio.AndOffLo_Off();	// =
@@ -160,23 +160,22 @@ void Keys::check() {
 			queeOn.pop_front();
 		}
 	}
-	if (!midiChannelFree.empty() && sendFree == isMidiSendReady::READY) {
-		sendFree = isMidiSendReady::NOREADY;
-		auto &front = midiChannelFree.front();
-		MidiSendOn(front.hi, front.lo, front.note);
-		midiChannelFree.pop_front();
+	if (!queeMidiSend.empty()) {
+		auto &front = queeMidiSend.front();
+		MidiSender(front.hi, front.lo, front.note, (uint8_t)front.mO);
+		queeMidiSend.pop_front();
 	}
 }
 
 void Keys::interrupt(cuint &channel) {
 	numberS nnumb;
 	nnumb.set(channel, mux.get());
-	if (midiOnOrOff == NowOnOrOff::midiOn) {
+	if (midiOnOrOff == OnOrOff::midiOn) {
 		bitsMidiOn[nnumb.mux].reset(channel);
 		queeOn.push_back(nnumb);
 		timerSave(nnumb);
 	} else {	//добавлять в очередь и отправлять спустя время..
-		MidiSendOff(120, 13, notes[nnumb.number]);
+		sendMidi(nnumb.number, 1000, midiOnOrOff);
 		bitsMidiOff[nnumb.mux].reset(channel);
 	}
 }
@@ -190,7 +189,7 @@ void Keys::timerSave(const numberS &nu) {
 		timer[nu.number] = Now;
 
 		// в очередь. Если off не сработал - то сразу добавить событие off, иначе просто миди on
-		sendMidi(nu.number, time); //<<<<<<<<<<<<<<<<<<<<<<
+		sendMidi(nu.number, time, midiOnOrOff); //<<<<<<<<<<<<<<<<<<<<<<
 //		sendMidi(nu.number + 2, time + 200); //<<<<<<<<<<<<<<<<<<<<<<
 //		sendMidi(nu.number + 4, time + 400); //<<<<<<<<<<<<<<<<<<<<<<
 //		sendMidi(nu.number + 6, time + 600); //<<<<<<<<<<<<<<<<<<<<<<
@@ -199,18 +198,11 @@ void Keys::timerSave(const numberS &nu) {
 	}
 }
 
-void Keys::sendMidi(cuint &nu, cuint &t) {
+void Keys::sendMidi(cuint &nu, cuint &t, OnOrOff &mO) {
 	auto midi_speed = divisible / t;	// 200-50000
 	auto midi_hi = midi_speed / maxMidi;
 	auto midi_lo = midi_speed - midi_hi * maxMidi;
-
-	//пока костыли для прверок
-	midiChannelFree.push_back( { midi_hi, midi_lo, notes[nu] });
-
-}
-
-uint muxer::get() const {
-	return mux;
+	queeMidiSend.push_back( { midi_hi, midi_lo, notes[nu], mO });
 }
 
 void muxer::toggle() {
@@ -221,10 +213,10 @@ void muxer::toggle() {
 	}
 }
 
-void muxer::setSizeMux(cuint &s) {
-	size = s;
+uint muxer::get() const {
+	return mux;
 }
 
-void Keys::midiFree() {
-	sendFree = isMidiSendReady::READY;
+void muxer::setSizeMux(cuint &s) {
+	size = s;
 }

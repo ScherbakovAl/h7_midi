@@ -26,7 +26,7 @@
 USBD_HandleTypeDef hUsbDeviceFS;
 USBD_CDC_HandleTypeDef *hcdcdc;
 
-void MidiSendOn(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
+void MidiSender(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note, uint8_t OnOff) {
 	uint8_t txbuf[8]; // можно размер и 512
 	txbuf[0] = 9; 	// ??
 	txbuf[1] = 176; // 176 (for hi-res midi)
@@ -34,30 +34,30 @@ void MidiSendOn(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
 	txbuf[3] = vel_midi_lo; // velocity xx.75
 
 	txbuf[4] = 9; 	// ?
-	txbuf[5] = 144; // 0x90(144) - note on, 0x80(128) - note off
+	txbuf[5] = OnOff; // 0x90(144) - note on, 0x80(128) - note off
 	txbuf[6] = note; // number note
 	txbuf[7] = vel_midi_hi; //velocity 86.xx
-	USBD_CDC_EP0_RxReady();
+
 	if (hcdcdc->TxState == 0) { //(0==свободно, !0==занято)
 		USBD_CDC_SetTxBuffer(&hUsbDeviceFS, txbuf, 8);
 		USBD_CDC_TransmitPacket(&hUsbDeviceFS);//долгая функция, что можно упростить?
 	}
 }
 
-void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
-	uint8_t txbuf[8];
-	txbuf[0] = 9; //??
-	txbuf[1] = 176; // 176 (for hi-res midi)
-	txbuf[2] = 88; // 88 (for hi-res midi)
-	txbuf[3] = vel_midi_lo; //velocity xx.75
-
-	txbuf[4] = 9; //??
-	txbuf[5] = 128; // 0x90(144) - note on, 0x80(128) - note off
-	txbuf[6] = note; //number note
-	txbuf[7] = vel_midi_hi; //velocity 86.xx
-
-	CDC_Transmit_FS(txbuf, 8);
-}
+//void MidiSendOff(uint8_t vel_midi_hi, uint8_t vel_midi_lo, uint8_t note) {
+//	uint8_t txbuf[8];
+//	txbuf[0] = 9; //??
+//	txbuf[1] = 176; // 176 (for hi-res midi)
+//	txbuf[2] = 88; // 88 (for hi-res midi)
+//	txbuf[3] = vel_midi_lo; //velocity xx.75
+//
+//	txbuf[4] = 9; //??
+//	txbuf[5] = 128; // 0x90(144) - note on, 0x80(128) - note off
+//	txbuf[6] = note; //number note
+//	txbuf[7] = vel_midi_hi; //velocity 86.xx
+//
+//	CDC_Transmit_FS(txbuf, 8);
+//}
 
 void MX_USB_DEVICE_Init(void) {
 
