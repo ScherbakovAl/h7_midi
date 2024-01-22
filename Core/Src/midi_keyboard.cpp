@@ -87,9 +87,12 @@ void Keys::numberNoteSetter() {
 
 void Keys::initBitMask() {
 	numberNoteSetter();
-	for (uint s = 0; s < sizeMux; ++s) {
+	for (uint s = 0; s < sizeMux; s += 2) {
 		bitsMidiOn[s].set();
+		bitsMidiOn[s + 1].set();
+
 		bitsMidiOff[s].reset();
+		bitsMidiOff[s + 1].set();
 	}
 	HAL_Delay(10);
 }
@@ -101,8 +104,9 @@ void Keys::wheel() {
 	SysTick->CTRL = 0;
 
 	while (1) {
+		gpio.Test2();	//for test
 		midiOnOrOff = OnOrOff::midiOn;
-//		for (uint i = 0; i < 100; ++i) {
+		for (uint i = 0; i < 40; ++i) {
 		maskLoadMidiOn();
 		gpio.ShLdHi_On();	// =
 		gpio.AndLo_On();	// =
@@ -119,7 +123,7 @@ void Keys::wheel() {
 			mux.toggle();
 		}
 		check();
-//		}
+		}
 		midiOnOrOff = OnOrOff::midiOff;
 		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
@@ -131,11 +135,9 @@ void Keys::wheel() {
 		for (uint p = one; p < sizeMux; ++p) {
 			maskLoadMidiOff();
 			gpio.ClkLo_Off();	// =
-			if (!(p % 2))
-				gpio.AndOffLo_Off();	// =
+			gpio.AndOffLo_Off();	// =
 			gpio.ClkHi_Off();	// |=
-			if (!(p % 2))
-				gpio.AndOffHi_Off();	// |=
+			gpio.AndOffHi_Off();	// |=
 			mux.toggle();
 		}
 	}
@@ -170,8 +172,16 @@ void Keys::interrupt(cuint &channel) {
 		dequeOn.push_back(nu);
 		timerSave(nu);
 	} else {
-		sendMidi(nu.number, 1000, midiOnOrOff);
-		bitsMidiOff[nu.mux].reset(channel);
+		if (nu.mux % 2 == 0) {
+			sendMidi(nu.number, 535, midiOnOrOff);
+			bitsMidiOff[nu.mux].reset(channel);
+			bitsMidiOff[nu.mux + 1].set(channel);
+		} else {
+			OnOrOff O = OnOrOff::midiOn;
+			sendMidi(nu.number, 63000, O);
+			bitsMidiOff[nu.mux - 1].set(channel);
+			bitsMidiOff[nu.mux].reset(channel);
+		}
 	}
 }
 
