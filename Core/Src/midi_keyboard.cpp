@@ -173,12 +173,12 @@ void Keys::interrupt(cuint &channel) {
 		timerSave(nu);
 	} else {
 		if (nu.mux % 2 == 0) {
-			sendMidi(nu.number, 535, midiOnOrOff);
+			sendMidi(nu.number, 535, midiOnOrOff);// при divisible = 8'600'000 -> 126.562
 			bitsMidiOff[nu.mux].reset(channel);
 			bitsMidiOff[nu.mux + 1].set(channel);
 		} else {
-			OnOrOff O = OnOrOff::midiOn;
-			sendMidi(nu.number, 63000, O);
+//			OnOrOff O = OnOrOff::midiOn;
+//			sendMidi(nu.number, 63000, O);// при divisible = 8'600'000 -> 1.070
 			bitsMidiOff[nu.mux - 1].set(channel);
 			bitsMidiOff[nu.mux].reset(channel);
 		}
