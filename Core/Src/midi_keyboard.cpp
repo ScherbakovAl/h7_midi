@@ -181,8 +181,8 @@ void Keys::interrupt(cuint &channel) {
 			bitsMidiOff[nu.mux].reset(channel);
 			bitsMidiOff[nu.mux + 1].set(channel);
 		} else {
-//			OnOrOff O = OnOrOff::midiOn;
-//			sendMidi(nu.number, 63000, O);// при divisible = 8'600'000 -> 1.070
+			OnOrOff O = OnOrOff::midiOn;
+			sendMidi(nu.number, 63000, O);// при divisible = 8'600'000 -> 1.070
 			bitsMidiOff[nu.mux - 1].set(channel);
 			bitsMidiOff[nu.mux].reset(channel);
 		}
