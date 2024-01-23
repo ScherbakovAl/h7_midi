@@ -94,6 +94,8 @@ void Keys::initBitMask() {
 		bitsMidiOff[s].reset();
 		bitsMidiOff[s + 1].set();
 	}
+	bitsMidiOff[1].reset(0);
+	bitsMidiOff[3].reset(0);
 	HAL_Delay(10);
 }
 
@@ -104,7 +106,6 @@ void Keys::wheel() {
 	SysTick->CTRL = 0;
 
 	while (1) {
-		gpio.Test2();	//for test
 		midiOnOrOff = OnOrOff::midiOn;
 		for (uint i = 0; i < 40; ++i) {
 		maskLoadMidiOn();
@@ -122,13 +123,16 @@ void Keys::wheel() {
 			gpio.AndHi_On();	// |=
 			mux.toggle();
 		}
+
 		check();
+
 		}
+		gpio.Test2();	//for test
 		midiOnOrOff = OnOrOff::midiOff;
 		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
-		gpio.AndOffLo_Off();	// =
 		gpio.ShLdLo_Off();		// |=
+		gpio.AndOffLo_Off();	// =	// порядок такой, иначе в ля-ми ми отключает ля.
 		gpio.AndOffHi_Off();	// |=
 		mux.toggle();
 
