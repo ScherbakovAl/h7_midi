@@ -98,7 +98,9 @@ private:
 	cuint maxMidi = 127;
 	cuint reTriggering = 64'000;
 	cuint timeToCleanUp = 64'000;
-	cuint divisible = 8'600'000; // 119.102 speed = 600us
+	cuint divisible = 8'400'000; // 119.102 speed = 600us
+	cuint off_lo = uint(float(divisible) / 1.03f / 127.0f);
+	cuint off_hi = uint(float(divisible) / 126.3f / 127.0f);
 	cuint sizeM = sizeMux;
 
 	muxer mux;

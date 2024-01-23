@@ -107,32 +107,32 @@ void Keys::wheel() {
 
 	while (1) {
 		midiOnOrOff = OnOrOff::midiOn;
-		for (uint i = 0; i < 40; ++i) {
-		maskLoadMidiOn();
-		gpio.ShLdHi_On();	// =
-		gpio.AndLo_On();	// =
-		gpio.ShLdLo_On();	// |=
-		gpio.AndHi_On();	// |=
-		mux.toggle();
-
-		for (uint o = one; o < sizeMux; ++o) {
+		for (uint i = 0; i < 60; ++i) {
 			maskLoadMidiOn();
-			gpio.ClkLo_On();	// =
+			gpio.ShLdHi_On();	// =
 			gpio.AndLo_On();	// =
-			gpio.ClkHi_On();	// |=
+			gpio.ShLdLo_On();	// |=
 			gpio.AndHi_On();	// |=
 			mux.toggle();
+
+			for (uint o = one; o < sizeMux; ++o) {
+				maskLoadMidiOn();
+				gpio.ClkLo_On();	// =
+				gpio.AndLo_On();	// =
+				gpio.ClkHi_On();	// |=
+				gpio.AndHi_On();	// |=
+				mux.toggle();
+			}
+
+			check();
+
 		}
 
-		check();
-
-		}
-		gpio.Test2();	//for test
 		midiOnOrOff = OnOrOff::midiOff;
 		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
 		gpio.ShLdLo_Off();		// |=
-		gpio.AndOffLo_Off();	// =	// порядок такой, иначе в ля-ми ми отключает ля.
+		gpio.AndOffLo_Off();// =	// порядок такой, иначе в ля-ми ми отключает ля.
 		gpio.AndOffHi_Off();	// |=
 		mux.toggle();
 
@@ -177,12 +177,12 @@ void Keys::interrupt(cuint &channel) {
 		timerSave(nu);
 	} else {
 		if (nu.mux % 2 == 0) {
-			sendMidi(nu.number, 535, midiOnOrOff);// при divisible = 8'600'000 -> 126.562
+			sendMidi(nu.number, off_hi, midiOnOrOff);
 			bitsMidiOff[nu.mux].reset(channel);
 			bitsMidiOff[nu.mux + 1].set(channel);
 		} else {
 			OnOrOff O = OnOrOff::midiOn;
-			sendMidi(nu.number, 63000, O);// при divisible = 8'600'000 -> 1.070
+			sendMidi(nu.number, off_lo, O);
 			bitsMidiOff[nu.mux - 1].set(channel);
 			bitsMidiOff[nu.mux].reset(channel);
 		}
