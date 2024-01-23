@@ -96,8 +96,8 @@ private:
 	static cuint channelBits = 11;
 	static cuint sizeMux = 16;
 	cuint maxMidi = 127;
-	cuint reTriggering = 50'000;
-	cuint timeToCleanUp = 50'000;
+	cuint reTriggering = 64'000;
+	cuint timeToCleanUp = 64'000;
 	cuint divisible = 8'600'000; // 119.102 speed = 600us
 	cuint sizeM = sizeMux;
 
