@@ -96,10 +96,10 @@ private:
 	static cuint channelBits = 11;
 	static cuint sizeMux = 16;
 	cuint maxMidi = 127;
-	cuint reTriggering = 64'000;
-	cuint timeToCleanUp = 64'000;
 	cuint divisible = 8'400'000; // 119.102 speed = 600us
-	cuint off_lo = uint(float(divisible) / 1.03f / 127.0f);
+	cuint reTriggering = uint(float(divisible) / 1.12f / 127.0f);//~64'000
+	cuint timeToCleanUp = reTriggering;//~64'000
+	cuint off_lo = uint(float(divisible) / 1.0f / 127.0f);
 	cuint off_hi = uint(float(divisible) / 126.3f / 127.0f);
 	cuint sizeM = sizeMux;
 
