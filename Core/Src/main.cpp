@@ -149,7 +149,8 @@ static void MX_GPIO_Init(void) {
 			GPIO_PIN_RESET);
 
 	GPIO_InitStruct.Pin = SH_LD_Pin | CLK_Pin | AND_Pin | AND_OFF_Pin
-			| (uint16_t) 0x0010 | (uint16_t) 0x0020; //for test
+			| (uint16_t) 0x0010 | (uint16_t) 0x0020
+			| (uint16_t) 0x0040 | (uint16_t) 0x0080; //for test
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;

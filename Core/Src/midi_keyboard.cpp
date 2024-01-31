@@ -69,6 +69,16 @@ void gpioBsrr::Test2() {
 	GPIOA->BSRR |= test2Off;	// =
 }
 
+void gpioBsrr::Test3() {
+	GPIOA->BSRR |= test3On;		// |=
+	GPIOA->BSRR |= test3Off;	// =
+}
+
+void gpioBsrr::Test4() {
+	GPIOA->BSRR |= test4On;		// |=
+	GPIOA->BSRR |= test4Off;	// =
+}
+
 void numberS::set(cuint &channel, cuint &m) {
 	number = (channel << 4) + m;
 	mux = m;
@@ -107,43 +117,41 @@ void Keys::wheel() {
 
 	while (1) {
 		midiOnOrOff = OnOrOff::midiOn;
-		for (uint i = 0; i < 60; ++i) {
-			maskLoadMidiOn();
+		for (uint i = 0; i < 1; ++i) {
 			gpio.ShLdHi_On();	// =
+			maskLoadMidiOn();
 			gpio.AndLo_On();	// =
 			gpio.ShLdLo_On();	// |=
 			gpio.AndHi_On();	// |=
 			mux.toggle();
 
 			for (uint o = one; o < sizeMux; ++o) {
-				maskLoadMidiOn();
 				gpio.ClkLo_On();	// =
+				maskLoadMidiOn();
 				gpio.AndLo_On();	// =
 				gpio.ClkHi_On();	// |=
 				gpio.AndHi_On();	// |=
 				mux.toggle();
 			}
-
 			check();
-
 		}
-
 		midiOnOrOff = OnOrOff::midiOff;
-		maskLoadMidiOff();
 		gpio.ShLdHi_Off();		// =
+		maskLoadMidiOff();
+		gpio.AndOffLo_Off();		// =
 		gpio.ShLdLo_Off();		// |=
-		gpio.AndOffLo_Off();// =	// порядок такой, иначе в ля-ми ми отключает ля.
 		gpio.AndOffHi_Off();	// |=
 		mux.toggle();
 
 		for (uint p = one; p < sizeMux; ++p) {
-			maskLoadMidiOff();
 			gpio.ClkLo_Off();	// =
+			maskLoadMidiOff();
 			gpio.AndOffLo_Off();	// =
 			gpio.ClkHi_Off();	// |=
 			gpio.AndOffHi_Off();	// |=
 			mux.toggle();
 		}
+		check();
 	}
 }
 

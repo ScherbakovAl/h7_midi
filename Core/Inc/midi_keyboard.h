@@ -36,6 +36,8 @@ public:
 
 	void Test1();
 	void Test2();
+	void Test3();
+	void Test4();
 
 private:
 	cuint shLdHi = 0x1;
@@ -50,6 +52,10 @@ private:
 	cuint test1Off = 0x0100000;
 	cuint test2On = 0x020;
 	cuint test2Off = 0x0200000;
+	cuint test3On = 0x040;
+	cuint test3Off = 0x0400000;
+	cuint test4On = 0x080;
+	cuint test4Off = 0x0800000;
 };
 
 class numberS {
@@ -96,8 +102,8 @@ private:
 	static cuint channelBits = 11;
 	static cuint sizeMux = 16;
 	cuint maxMidi = 127;
-	cuint divisible = 8'400'000; // 119.102 speed = 600us
-	cuint reTriggering = uint(float(divisible) / 1.12f / 127.0f);//~64'000
+	cuint divisible = 9'400'000; // 119.102 speed = 600us // ~8'400'000
+	cuint reTriggering = uint(float(divisible) / 1.1f / 127.0f);//~64'000
 	cuint timeToCleanUp = reTriggering;//~64'000
 	cuint off_lo = uint(float(divisible) / 1.0f / 127.0f);
 	cuint off_hi = uint(float(divisible) / 126.3f / 127.0f);
