@@ -117,7 +117,7 @@ void Keys::wheel() {
 
 	while (1) {
 		midiOnOrOff = OnOrOff::midiOn;
-		for (uint i = 0; i < 1; ++i) {
+		for (uint i = 0; i < 59; ++i) {
 			gpio.ShLdHi_On();	// =
 			maskLoadMidiOn();
 			gpio.AndLo_On();	// =
