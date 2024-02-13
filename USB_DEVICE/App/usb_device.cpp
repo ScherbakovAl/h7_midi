@@ -34,7 +34,6 @@ void MidiSender(std::deque<Note> &deqNote, uint8_t *buf) {
 			deqNote.resize(64);
 			i = 512;
 		}
-
 		for (auto &n : deqNote) {
 			buf[s] = 9; // ??
 			buf[s + 1] = 176; // 176 (for hi-res midi)

@@ -73,6 +73,11 @@ void SystemClock_Config(void) {
 	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 	HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
+//	__HAL_RCC_SYSCFG_CLK_ENABLE();
+//	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
+	}
 	__HAL_RCC_SYSCFG_CLK_ENABLE();
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
@@ -85,7 +90,7 @@ void SystemClock_Config(void) {
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
 	RCC_OscInitStruct.PLL.PLLM = 2;
-	RCC_OscInitStruct.PLL.PLLN = 96; //20 == 100mhz, 96 == 480mhz
+	RCC_OscInitStruct.PLL.PLLN = 80;
 	RCC_OscInitStruct.PLL.PLLP = 2;
 	RCC_OscInitStruct.PLL.PLLQ = 2;
 	RCC_OscInitStruct.PLL.PLLR = 2;
@@ -100,12 +105,12 @@ void SystemClock_Config(void) {
 			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1
 			| RCC_CLOCKTYPE_D1PCLK1;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1; //<<<<<<<<<<<<< 1
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2; // 1 or 2 (после проца делитель)
-	RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2; // 1 or 2
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2; // 1 or 2
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2; // 1 or 2
-	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2; // 1 or 2
+	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
+	RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
 	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK) {
 		Error_Handler();
@@ -116,7 +121,7 @@ static void MX_TIM2_Init(void) {
 	TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
 	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 	htim2.Instance = TIM2;
-	htim2.Init.Prescaler = 300;
+	htim2.Init.Prescaler = 249;
 	htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim2.Init.Period = 4294967295;
 	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -149,8 +154,8 @@ static void MX_GPIO_Init(void) {
 			GPIO_PIN_RESET);
 
 	GPIO_InitStruct.Pin = SH_LD_Pin | CLK_Pin | AND_Pin | AND_OFF_Pin
-			| (uint16_t) 0x0010 | (uint16_t) 0x0020
-			| (uint16_t) 0x0040 | (uint16_t) 0x0080; //for test
+			| (uint16_t) 0x0010 | (uint16_t) 0x0020 | (uint16_t) 0x0040
+			| (uint16_t) 0x0080; //for test
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
