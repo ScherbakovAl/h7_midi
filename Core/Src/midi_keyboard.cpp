@@ -193,7 +193,6 @@ void Keys::maskLoadMidiOff() {
 
 void Keys::check() {
 	if (!dequeOn.empty()) {
-//		dequeOn.resize(1000);	//for test
 		auto &f = dequeOn.front();
 		if (TIM2->CNT - timer[f.number] > timeToCleanUp) {
 			bitsMidiOn[f.mux].set(f.cha);
@@ -201,12 +200,12 @@ void Keys::check() {
 		}
 	}
 	if (!dequeNotes.empty()) {
-//		dequeNotes.resize(1000);	//for test
 		MidiSender(dequeNotes, bufNotes);
 	}
 }
 
 void Keys::interrupt(cuint &channel) {
+	gpio.Test1();//for test
 	numberS nu;
 	nu.set(channel, mux.get());
 	if (midiOnOrOff == OnOrOff::midiOn) {
@@ -242,8 +241,10 @@ void Keys::timerSave(const numberS &nu) {
 }
 
 void Keys::sendMidi(cuint &nu, cuint &t, OnOrOff &mO) {
+
 	auto midi_speed = divisible / t;	//600-64000
 	auto midi_hi = midi_speed / maxMidi;
+
 //	if (midi_hi > 127)
 //		gpio.Test1();	//for test
 	auto midi_lo = midi_speed - midi_hi * maxMidi;
