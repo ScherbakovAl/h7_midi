@@ -148,6 +148,14 @@ static void MX_GPIO_Init(void) {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+	GPIO_InitStruct.Pin = GPIO_PIN_3;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
 	HAL_GPIO_WritePin(GPIOA,
 			SH_LD_Pin | CLK_Pin | AND_Pin | AND_OFF_Pin | (uint16_t) 0x0010
 					| (uint16_t) 0x0020, //for test

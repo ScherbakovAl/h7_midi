@@ -14,7 +14,7 @@
 using uint = unsigned int;
 using cuint = const uint;
 
-enum class OnOrOff : uint8_t{
+enum class OnOrOff : uint8_t {
 	midiOff = 128, midiOn = 144
 };
 
@@ -84,7 +84,7 @@ private:
 	uint size;
 };
 
-class Keys {	//explicit ?
+class Keys {
 public:
 	void wheel();
 	void interrupt(cuint &channel);
@@ -102,11 +102,12 @@ private:
 	static cuint channelBits = 11;
 	static cuint sizeMux = 16;
 	cuint maxMidi = 127;
-	cuint divisible = 7'300'000; // 119.102 speed = 600us // ~8'400'000
-	cuint reTriggering = uint(float(divisible) / 1.1f / 127.0f); //~64'000
-	cuint timeToCleanUp = reTriggering; //~64'000
+	cuint divisible = 7'900'000;
+	cuint reTriggering = uint(float(divisible) / 1.1f / 127.0f);
+	cuint timeToCleanUp = reTriggering;
+	cuint max = divisible / (maxMidi * maxMidi);
 	cuint off_lo = uint(float(divisible) / 1.0f / 127.0f);
-	cuint off_hi = uint(float(divisible) / 126.3f / 127.0f);
+	cuint off_hi = uint(float(divisible) / 60.0f / 127.0f);
 	cuint sizeM = sizeMux;
 
 	muxer mux;
@@ -114,6 +115,7 @@ private:
 	OnOrOff midiOnOrOff = OnOrOff::midiOn;
 	std::deque<numberS> dequeOn;
 	std::deque<Note> dequeNotes;
+	std::deque<unsigned long int> led;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	uint timer[sensors] = { };

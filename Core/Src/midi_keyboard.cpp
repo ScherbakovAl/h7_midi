@@ -108,7 +108,7 @@ void Keys::initBitMask() {
 		bitsMidiOff[s].reset();
 		bitsMidiOff[s + 1].set();
 	}
-	bitsMidiOff[1].reset(0); //две клавиши без механики
+	bitsMidiOff[1].reset(0); //две нижние клавиши без механики
 	bitsMidiOff[3].reset(0);
 	HAL_Delay(10);
 }
@@ -132,7 +132,6 @@ void Keys::wheel() {
 //	}
 
 	while (1) {
-//		gpio.Test1();	//for test
 		midiOnOrOff = OnOrOff::midiOn;
 		for (uint i = 0; i < 59; ++i) {
 			gpio.ShLdHi_On();
@@ -155,19 +154,16 @@ void Keys::wheel() {
 		}
 		midiOnOrOff = OnOrOff::midiOff;
 
-		gpio.ShLdHi_Off(); //0x1;
-//		GPIOA->BSRR = 0x1;// sh/ld-
-
+		gpio.ShLdHi_Off(); //0x1
+//		GPIOA->BSRR = 0x1; // sh/ld
 		maskLoadMidiOff();
-
 		gpio.AndOffLo_Off(); //0x80000
 //		GPIOA->BSRR = 0x80000;
-		gpio.ShLdLo_Off(); //0x10000;
+		gpio.ShLdLo_Off(); //0x10000
 //		GPIOA->BSRR = 0x10000;
-//		GPIOA->BSRR = 0xB0000;// sh/ld+, clk+, andoff+
-
+//		GPIOA->BSRR = 0xB0000; // sh/ld+, clk+, andoff+
 		gpio.AndOffHi_Off(); //0x8
-//		GPIOA->BSRR = 0x8;//+clk
+//		GPIOA->BSRR = 0x8; //+clk
 
 		mux.toggle();
 
@@ -202,10 +198,19 @@ void Keys::check() {
 	if (!dequeNotes.empty()) {
 		MidiSender(dequeNotes, bufNotes);
 	}
+	if(!led.empty())
+	{
+		auto &l = led.front();
+		if(TIM2->CNT - l > 200'000)
+		{
+			GPIOE->BSRR = 0x80000;
+			led.pop_front();
+		}
+	}
 }
 
 void Keys::interrupt(cuint &channel) {
-	gpio.Test1();//for test
+	gpio.Test1(); //for test
 	numberS nu;
 	nu.set(channel, mux.get());
 	if (midiOnOrOff == OnOrOff::midiOn) {
@@ -230,26 +235,25 @@ void Keys::timerSave(const numberS &nu) {
 	auto Now = TIM2->CNT;
 	if (nu.mux % 2 == 0) {
 		timer[nu.number] = Now;
-		gpio.Test1();//for test
 	} else {
 		auto time = Now - timer[nu.number - 1];
+
+		if (time < max) { //test
+			time = max + 1; //test
+			GPIOE->BSRR = 0x8; //test
+			led.push_back(Now); //test
+		}
+
 		timer[nu.number] = Now;
 		sendMidi(nu.number, time, midiOnOrOff);
 		bitsMidiOff[nu.mux - 1].set(nu.cha);
-		gpio.Test1();//for test
 	}
 }
 
 void Keys::sendMidi(cuint &nu, cuint &t, OnOrOff &mO) {
-
-	auto midi_speed = divisible / t;	//600-64000
+	auto midi_speed = divisible / t;	//490-61700
 	auto midi_hi = midi_speed / maxMidi;
-
-//	if (midi_hi > 127)
-//		gpio.Test1();	//for test
 	auto midi_lo = midi_speed - midi_hi * maxMidi;
-//	if (midi_lo > 126)
-//		gpio.Test2();	//for test
 	dequeNotes.push_back( { midi_hi, midi_lo, notes[nu], mO });
 }
 
