@@ -34,7 +34,6 @@ void MidiSender(std::deque<Note> &deqNote, uint8_t *buf) {
 			deqNote.resize(64);
 			i = 512;
 		}
-
 		for (auto &n : deqNote) {
 			buf[s] = 9; // ??
 			buf[s + 1] = 176; // 176 (for hi-res midi)
@@ -74,6 +73,8 @@ void MX_USB_DEVICE_Init(void) {
 
 	HAL_PWREx_EnableUSBVoltageDetector();
 
+	GPIOE->BSRR = 0x8;
+
 	uint8_t txbuf[8]; //start midi mini test
 //on
 	txbuf[0] = 9; //??
@@ -87,11 +88,13 @@ void MX_USB_DEVICE_Init(void) {
 	txbuf[6] = 55; //note
 	txbuf[7] = 120; //vel	//velocity 86.xx (for hi-res midi)
 
-	HAL_Delay(600);
+	HAL_Delay(800);
 
 	CDC_Transmit_FS(txbuf, 8);
 	HAL_Delay(100);
 	CDC_Transmit_FS(txbuf, 8);
+
+	GPIOE->BSRR = 0x80000;
 
 	hcdcdc = (USBD_CDC_HandleTypeDef*) hUsbDeviceFS.pClassData; // свободно для отправки? "if (hcdcdc->TxState == ...)"; (0==свободно, !0==занято)
 }
