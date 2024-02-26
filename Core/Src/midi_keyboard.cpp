@@ -189,6 +189,7 @@ void Keys::interrupt(cuint &channel) {
 			bitsMidiOff[nu.mux].reset(channel);
 			bitsMidiOff[nu.mux + 1].set(channel);
 		} else {
+			gpio.Test1();
 			OnOrOff O = OnOrOff::midiOn;
 			sendMidi(nu.number, off_lo, O);
 			bitsMidiOff[nu.mux - 1].set(channel);
