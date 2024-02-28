@@ -73,8 +73,6 @@ void SystemClock_Config(void) {
 	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 	HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
-//	__HAL_RCC_SYSCFG_CLK_ENABLE();
-//	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
 	}
@@ -139,7 +137,6 @@ static void MX_TIM2_Init(void) {
 			!= HAL_OK) {
 		Error_Handler();
 	}
-
 }
 
 static void MX_GPIO_Init(void) {

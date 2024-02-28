@@ -88,7 +88,6 @@ class Keys {
 public:
 	void wheel();
 	void interrupt(cuint &channel);
-
 private:
 	void numberNoteSetter();
 	void initBitMask();

@@ -57,15 +57,10 @@ void gpioBsrr::AndOffHi_Off() {
 void gpioBsrr::AndOffLo_Off() {
 	GPIOA->BSRR |= andOffLo;
 }
-// ################################################## for OFF
 
 void gpioBsrr::Test1() {
 	GPIOA->BSRR = test1On;
 	GPIOA->BSRR = test1Off;
-//	GPIOA->BSRR = 0x200010;
-//	GPIOA->BSRR = 0x100020;
-//	GPIOA->BSRR = 0x200010;
-//	GPIOA->BSRR = 0x100020;
 }
 
 void gpioBsrr::Test2() {
@@ -113,23 +108,11 @@ void Keys::initBitMask() {
 	HAL_Delay(10);
 }
 
-// -fsanitize=undefined
-// -fsanitize=address
-
 void Keys::wheel() {
 	gpio.AndOffHi_Off(); // чтобы не грелись микрухи управляющие "off" ??
 	initBitMask();
 	mux.setSizeMux(sizeM);
 	SysTick->CTRL = 0;
-
-//	auto titimer = TIM2->CNT;
-//	while (1) {
-//		if (TIM2->CNT - titimer > 1000) {
-//			GPIOA->BSRR = 0x100000;
-//			GPIOA->BSRR = 0x10;
-//			titimer = TIM2->CNT;
-//		}
-//	}
 
 	while (1) {
 		midiOnOrOff = OnOrOff::midiOn;
@@ -144,7 +127,6 @@ void Keys::wheel() {
 			for (uint o = one; o < sizeMux; ++o) {
 				gpio.ClkLo_On();
 				maskLoadMidiOn();
-
 				gpio.AndLo_On();
 				gpio.ClkHi_On();
 				gpio.AndHi_On();
@@ -153,26 +135,19 @@ void Keys::wheel() {
 			check();
 		}
 		midiOnOrOff = OnOrOff::midiOff;
-
-		gpio.ShLdHi_Off(); //0x1
-//		GPIOA->BSRR = 0x1; // sh/ld
+		gpio.ShLdHi_Off();
 		maskLoadMidiOff();
-		gpio.AndOffLo_Off(); //0x80000
-//		GPIOA->BSRR = 0x80000;
-		gpio.ShLdLo_Off(); //0x10000
-//		GPIOA->BSRR = 0x10000;
-//		GPIOA->BSRR = 0xB0000; // sh/ld+, clk+, andoff+
-		gpio.AndOffHi_Off(); //0x8
-//		GPIOA->BSRR = 0x8; //+clk
-
+		gpio.AndOffLo_Off();
+		gpio.ShLdLo_Off();
+		gpio.AndOffHi_Off();
 		mux.toggle();
 
 		for (uint p = one; p < sizeMux; ++p) {
-			gpio.ClkLo_Off(); //0x20000
+			gpio.ClkLo_Off();
 			maskLoadMidiOff();
-			gpio.AndOffLo_Off(); //0x80000
-			gpio.ClkHi_Off(); //0x2
-			gpio.AndOffHi_Off(); //0x8
+			gpio.AndOffLo_Off();
+			gpio.ClkHi_Off();
+			gpio.AndOffHi_Off();
 			mux.toggle();
 		}
 		check();
@@ -210,7 +185,6 @@ void Keys::check() {
 }
 
 void Keys::interrupt(cuint &channel) {
-	gpio.Test1(); //for test
 	numberS nu;
 	nu.set(channel, mux.get());
 	if (midiOnOrOff == OnOrOff::midiOn) {
@@ -223,7 +197,6 @@ void Keys::interrupt(cuint &channel) {
 			bitsMidiOff[nu.mux + 1].set(channel);
 			bitsMidiOff[nu.mux].reset(channel);
 		} else {
-			gpio.Test1();
 			OnOrOff O = OnOrOff::midiOn;
 			sendMidi(nu.number, off_lo, O);
 			bitsMidiOff[nu.mux - 1].set(channel);
@@ -238,13 +211,11 @@ void Keys::timerSave(const numberS &nu) {
 		timer[nu.number] = Now;
 	} else {
 		auto time = Now - timer[nu.number - 1];
-
-		if (time < max) { //test
-			time = max + 1; //test
-			GPIOE->BSRR = 0x8; //test
-			led.push_back(Now); //test
+		if (time < max) {
+			time = max + 1;
+			GPIOE->BSRR = 0x8;
+			led.push_back(Now);
 		}
-
 		timer[nu.number] = Now;
 		sendMidi(nu.number, time, midiOnOrOff);
 		bitsMidiOff[nu.mux - 1].set(nu.cha);
@@ -252,7 +223,7 @@ void Keys::timerSave(const numberS &nu) {
 }
 
 void Keys::sendMidi(cuint &nu, cuint &t, OnOrOff &mO) {
-	auto midi_speed = divisible / t;	//490-61700
+	auto midi_speed = divisible / t;	//~490-61700
 	auto midi_hi = midi_speed / maxMidi;
 	auto midi_lo = midi_speed - midi_hi * maxMidi;
 	dequeNotes.push_back( { midi_hi, midi_lo, notes[nu], mO });
