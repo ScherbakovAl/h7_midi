@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -63,14 +63,8 @@ void Error_Handler(void);
 #define CLK_GPIO_Port GPIOA
 #define AND_Pin GPIO_PIN_2
 #define AND_GPIO_Port GPIOA
-#define test_8_Pin GPIO_PIN_8
-#define test_8_GPIO_Port GPIOE
-#define test_10_Pin GPIO_PIN_10
-#define test_10_GPIO_Port GPIOE
-#define test_12_Pin GPIO_PIN_12
-#define test_12_GPIO_Port GPIOE
-#define test_14_Pin GPIO_PIN_14
-#define test_14_GPIO_Port GPIOE
+#define AND_OFF_Pin GPIO_PIN_3
+#define AND_OFF_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
