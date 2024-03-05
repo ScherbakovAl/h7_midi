@@ -1,3 +1,6 @@
+https://www.youtube.com/watch?v=4QYlIZP8Dl4
+
+
 https://oshwlab.com/scherbakov.al/controller2
 
 https://oshwlab.com/scherbakov.al/1-a0-c3-on
