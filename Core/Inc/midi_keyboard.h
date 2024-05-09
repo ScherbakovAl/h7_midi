@@ -114,7 +114,7 @@ private:
 	OnOrOff midiOnOrOff = OnOrOff::midiOn;
 	std::deque<numberS> dequeOn;
 	std::deque<Note> dequeNotes;
-	std::deque<unsigned long int> led;
+	std::deque<unsigned long int> dequeLed;
 	std::bitset<channelBits> bitsMidiOn[sizeMux];
 	std::bitset<channelBits> bitsMidiOff[sizeMux];
 	uint timer[sensors] = { };

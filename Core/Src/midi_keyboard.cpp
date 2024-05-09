@@ -173,13 +173,13 @@ void Keys::check() {
 	if (!dequeNotes.empty()) {
 		MidiSender(dequeNotes, bufNotes);
 	}
-	if(!led.empty())
+	if(!dequeLed.empty())
 	{
-		auto &l = led.front();
+		auto &l = dequeLed.front();
 		if(TIM2->CNT - l > 200'000)
 		{
 			GPIOE->BSRR = 0x80000;
-			led.pop_front();
+			dequeLed.pop_front();
 		}
 	}
 }
@@ -214,7 +214,7 @@ void Keys::timerSave(const numberS &nu) {
 		if (time < max) {
 			time = max + 1;
 			GPIOE->BSRR = 0x8;
-			led.push_back(Now);
+			dequeLed.push_back(Now);
 		}
 		timer[nu.number] = Now;
 		sendMidi(nu.number, time, midiOnOrOff);
