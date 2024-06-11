@@ -16,3 +16,5 @@ https://oshwlab.com/scherbakov.al/1-a0-c3-off
 https://oshwlab.com/scherbakov.al/2-c_3-g_4-off
 
 https://oshwlab.com/scherbakov.al/2-c_3-g_4-off
+
+Moved here: https://github.com/ScherbakovAl/midi_keyboard_h723
